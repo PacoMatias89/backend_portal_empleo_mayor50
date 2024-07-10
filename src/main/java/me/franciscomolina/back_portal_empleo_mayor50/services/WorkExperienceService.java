@@ -43,12 +43,12 @@ public class WorkExperienceService implements IWorkExperienceService {
         workExperience.setPosition(workExperienceDto.getPosition());
 
         // Validar que las fechas no sean null y no estén en el futuro
-        if (workExperienceDto.getStartDate() == null || workExperienceDto.getEndDate() == null) {
-            throw new IllegalArgumentException("Las fechas de inicio y fin no pueden ser nulas");
-        }
-
         LocalDate startDate = workExperienceDto.getStartDate();
         LocalDate endDate = workExperienceDto.getEndDate();
+
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Las fechas de inicio y fin no pueden ser nulas");
+        }
 
         if (startDate.isAfter(LocalDate.now()) || endDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("La fecha de inicio o fin no puede ser en el futuro");
@@ -61,13 +61,13 @@ public class WorkExperienceService implements IWorkExperienceService {
         // Asignar las fechas después de validar
         workExperience.setStartDate(startDate);
         workExperience.setEndDate(endDate);
+        workExperience.setCreatedAt(LocalDate.now());
 
         workExperience.setDescription(workExperienceDto.getDescription());
         userRepository.findById(workExperienceDto.getUserId()).ifPresent(workExperience::setUser);
 
         return workExperienceRepository.save(workExperience);
     }
-
 
     @Override
     public WorkExperience updateWorkExperience(Long id, WorkExperienceDto workExperienceDto) {
@@ -78,12 +78,12 @@ public class WorkExperienceService implements IWorkExperienceService {
             workExperienceUpdate.setCompanyName(workExperienceDto.getCompanyName());
             workExperienceUpdate.setPosition(workExperienceDto.getPosition());
 
-            if (workExperienceDto.getStartDate() == null || workExperienceDto.getEndDate() == null) {
-                throw new IllegalArgumentException("Las fechas de inicio y fin no pueden ser nulas");
-            }
-
             LocalDate startDate = workExperienceDto.getStartDate();
             LocalDate endDate = workExperienceDto.getEndDate();
+
+            if (startDate == null || endDate == null) {
+                throw new IllegalArgumentException("Las fechas de inicio y fin no pueden ser nulas");
+            }
 
             if (startDate.isAfter(LocalDate.now()) || endDate.isAfter(LocalDate.now())) {
                 throw new IllegalArgumentException("La fecha de inicio o fin no puede ser en el futuro");
@@ -104,8 +104,6 @@ public class WorkExperienceService implements IWorkExperienceService {
             throw new RuntimeException("No se encontró la experiencia laboral con el id: " + id);
         }
     }
-
-
 
     @Override
     public WorkExperience deleteWorkExperience(Long id) {
@@ -133,10 +131,4 @@ public class WorkExperienceService implements IWorkExperienceService {
 
         return totalPeriod.getYears() + " años " + totalPeriod.getMonths() + " meses " + totalPeriod.getDays() + " días";
     }
-
-
-
-
-
-
 }
