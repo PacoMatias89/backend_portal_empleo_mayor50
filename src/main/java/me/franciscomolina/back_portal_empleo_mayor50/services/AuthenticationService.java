@@ -28,7 +28,7 @@ public class AuthenticationService implements IAuthenticationService {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Inyecta el PasswordEncoder configurado
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private WorkExperienceService workExperienceService;

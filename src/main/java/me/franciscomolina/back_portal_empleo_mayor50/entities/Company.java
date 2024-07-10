@@ -1,17 +1,17 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -37,6 +37,7 @@ public class Company {
     private String lastname;
 
     @Basic
+    @Email(message = "El email debe ser válido")
     @Column(name = "email", unique = true)
     @NotNull(message = "El email es obligatorio")
     @NotBlank(message = "El email no puede estar vacío")

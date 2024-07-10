@@ -6,7 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
+import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.util.SecurityUtils;
 import org.apache.catalina.User;
@@ -81,6 +83,55 @@ public class JwtProviderImpl implements JwtProvider {
         }
     }
 
+    /*========================================================*/
+    /*================= METHOD COMPANY ===============*/
+
+    @Override
+    public String generateTokenToCompany(CompanyEntityPrincipal auth) {
+        //Obtenemos las authorities del usuario, la convertimos en una cadena de texto separada por una coma.
+        String authorities = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        //Definimos la clave secreta para hacer la firma del token
+        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+
+        // Obtener la fecha actual en milisegundos desde la época
+        Instant now = Instant.now();
+        Date expirationDate = new Date(now.toEpochMilli() + Long.parseLong(JWT_EXPERATION_IN_MS));
+
+        return Jwts.builder()
+                .setSubject(auth.getUsername())
+                .claim("roles", authorities)
+                .claim("userId", auth.getId())
+                .setExpiration(expirationDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    @Override
+    public String generateTokenCompany(Company client) {
+        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+
+        if (JWT_EXPERATION_IN_MS == null || JWT_EXPERATION_IN_MS.isEmpty()) {
+            // Si JWT_EXPERATION_IN_MS es null o está vacío, generar un token sin fecha de expiración
+            return Jwts.builder()
+                    .setSubject(client.getLastname())
+                    .claim("roles", client.getRole())
+                    .claim("userId", client.getId())
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+        } else {
+            // Si JWT_EXPERATION_IN_MS tiene un valor, usarlo como fecha de expiración
+            return Jwts.builder()
+                    .setSubject(client.getLastname())
+                    .claim("roles", client.getRole())
+                    .claim("userId", client.getId())
+                    .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(JWT_EXPERATION_IN_MS)))
+                    .signWith(key, SignatureAlgorithm.HS512)
+                    .compact();
+        }
+    }
 
 
     @Override

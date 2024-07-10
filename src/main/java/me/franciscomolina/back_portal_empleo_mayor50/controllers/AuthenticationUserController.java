@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/authentication")
+@RequestMapping("/api/authentication")
 public class AuthenticationUserController {
 
     @Autowired
@@ -38,9 +38,7 @@ public class AuthenticationUserController {
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody UserEntity client) {
-        System.out.println("Datos del usuario:" + authenticationService.signInAndReturnJWT(client));
         try {
-
             return new ResponseEntity<>(authenticationService.signInAndReturnJWT(client), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("ERROR: " + e.getMessage());

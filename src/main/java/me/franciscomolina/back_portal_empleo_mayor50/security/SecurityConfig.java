@@ -25,12 +25,11 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-
-
+    @Autowired
+    private CustomCompanyDetailsService customCompanyDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -44,22 +43,30 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder auth = http.getSharedObject(
-                AuthenticationManagerBuilder.class
-        );
+        AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(customCompanyDetailsService).passwordEncoder(passwordEncoder);
 
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/authentication/sign-up").permitAll()
-                        .requestMatchers("/authentication/sign-in").permitAll()
+                        .requestMatchers("/api/authentication/sign-up").permitAll()
+                        .requestMatchers("/api/authentication/sign-in").permitAll()
+                        .requestMatchers("/api/authentication-company/sign-up").permitAll()
+                        .requestMatchers("/api/authentication-company/sign-in").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    // Configuración del AuthenticationManagerBuilder separadamente
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(customCompanyDetailsService).passwordEncoder(passwordEncoder);
     }
 
     // Configurar CORS para el frontend
