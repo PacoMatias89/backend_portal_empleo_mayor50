@@ -59,7 +59,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public Optional<Company> findByName(String name) {
+    public Optional<Company> findByUsername(String name) {
         return companyRepository.findByName(name);
     }
 
@@ -86,11 +86,32 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public Company editCompany(Long id, CompanyDto companyEntity) {
-        return null;
+        Company  company = companyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La compañía no fue encontrado:" + id));
+        /*Datos para acceder*/
+        company.setName(companyEntity.getName());
+        company.setLastname(companyEntity.getLastname());
+        company.setEmail(companyEntity.getEmail());
+        company.setPassword(passwordEncoder.encode(companyEntity.getPassword()));
+        company.setConfirmPasswordCompany(passwordEncoder.encode(companyEntity.getConfirmPasswordCompany()));
+
+
+        /*Datos de la empresa(Es posible que no haga falta cambiar los datos de la empresa)*/
+        company.setCompanyName(companyEntity.getCompanyName());
+        company.setPhoneContact(companyEntity.getPhoneContact());
+        company.setCifCompany(companyEntity.getCifCompany());
+        company.setIsEtt(companyEntity.getIsEtt());
+        company.setDescription(companyEntity.getDescription());
+
+        return companyRepository.save(company);
     }
 
     @Override
     public Company deleteCompany(Long id) {
-        return null;
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La compañía no fue encontrado:" + id));
+
+        companyRepository.delete(company);
+        return company;
     }
 }

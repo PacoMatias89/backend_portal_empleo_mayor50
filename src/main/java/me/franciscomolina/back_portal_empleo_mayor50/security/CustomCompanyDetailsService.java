@@ -20,10 +20,13 @@ public class CustomCompanyDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Company company = companyService.findByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("El usuario no fue encontrado:" + username));
+        Company company = companyService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("La empresa no fue encontrada:" + username));
 
         Set<GrantedAuthority> authorities = Set.of(SecurityUtils.convertToAuthority(company.getRole().name()));
+        System.out.println("Role: " + company.getRole().name());
+        System.out.println("id: " + company.getId());
+        System.out.println("username: " + company.getCompanyName());
         return CompanyEntityPrincipal.builder()
                 .company(company)
                 .id(company.getId())

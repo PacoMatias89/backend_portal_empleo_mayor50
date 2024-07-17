@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,8 +17,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class CompanyEntityPrincipal implements UserDetails {
-
-
     private Long id;
     private String username;
     transient private String password;

@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ICompanyService {
     Company create(CompanyDto company);
 
-    Optional<Company> findByName(String name);
+    Optional<Company> findByUsername(String name);
 
     Optional<Company> findByEmail(String email);
 

@@ -26,8 +26,6 @@ public class UserEntityPrincipal implements UserDetails {
     private Set<GrantedAuthority> authorities;
 
 
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
