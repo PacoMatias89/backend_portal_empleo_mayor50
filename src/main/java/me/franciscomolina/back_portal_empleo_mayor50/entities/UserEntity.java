@@ -75,6 +75,10 @@ public class UserEntity {
     @JsonManagedReference
     private List<WorkExperience> workExperiences;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<JobApplication> jobApplications;
+
+
     @Transient
     private String totalExperience;
 }

@@ -1,5 +1,6 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -89,6 +91,11 @@ public class Company {
     @Enumerated(EnumType.STRING)
     @Column(name="role", nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<JobOffer> jobOffers;
+
 
     @Basic
     @Column(name = "created_at")

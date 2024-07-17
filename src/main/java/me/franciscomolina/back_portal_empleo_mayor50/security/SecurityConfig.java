@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/authentication/sign-in").permitAll()
                         .requestMatchers("/api/authentication-company/sign-up").permitAll()
                         .requestMatchers("/api/authentication-company/sign-in").permitAll()
+                        .requestMatchers("/api/company/job-offers/getAllJobOffer").permitAll() // Todos pueden ver ofertas de trabajo)
+                        .requestMatchers("/api/company/job-offers").hasRole("COMPANY")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

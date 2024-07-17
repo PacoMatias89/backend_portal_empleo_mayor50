@@ -46,7 +46,7 @@ public class CompanyService implements ICompanyService {
         companyEntity.setCifCompany(company.getCifCompany());
         companyEntity.setIsEtt(false);
         companyEntity.setDescription(company.getDescription());
-        companyEntity.setRole(Role.USER);
+        companyEntity.setRole(Role.COMPANY);
 
         /*create date*/
         companyEntity.setCreatedAt(LocalDate.now());
