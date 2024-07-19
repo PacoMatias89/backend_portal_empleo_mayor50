@@ -21,4 +21,8 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     @Query("SELECT COUNT(a) FROM JobApplication a WHERE a.jobOffer.id = :jobOfferId")
     int countApplicationsByJobOfferId(@Param("jobOfferId") Long jobOfferId);
+
+
+
+
 }

@@ -2,9 +2,9 @@ package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,62 +14,63 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "job_offers")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
-
 public class JobOffer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.JobOfferDetail.class)
     private Long id;
 
     @Basic
     @Column(name = "title")
-    @NotBlank(message = "El título no puede estar vacío")
-    @NotNull(message = "El título es obligatorio")
+    @JsonView(Views.JobOfferDetail.class)
     private String title;
 
     @Basic
     @Column(name = "description")
-    @NotBlank(message = "La descripción no puede estar vacía")
-    @NotNull(message = "La descripción es obligatoria")
+    @JsonView(Views.JobOfferDetail.class)
     private String description;
 
     @Basic
     @Column(name = "salary")
-    @NotNull(message = "El salario es obligatorio")
+    @JsonView(Views.JobOfferDetail.class)
     private Double salary;
 
     @Basic
     @Column(name = "requirements")
-    @NotBlank(message = "Los requisitos no pueden estar vacíos")
-    @NotNull(message = "Los requisitos son obligatorios")
+    @JsonView(Views.JobOfferDetail.class)
     private String requirements;
 
     @Basic
     @Column(name = "location")
-    @NotBlank(message = "La localización no puede estar vacía")
-    @NotNull(message = "La localización es obligatoria")
+    @JsonView(Views.JobOfferDetail.class)
     private String location;
 
     @Basic
     @Column(name = "created_at")
+    @JsonView(Views.JobOfferDetail.class)
     private LocalDate createdAt;
-
-    //Saber las personas que han aplicado a la oferta JobOffer
-    @Getter
-    @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<JobApplication> applications;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
-    @JsonBackReference
     private Company company;
 
+    @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
+    //@JsonView(Views.JobOfferDetail.class)
+    private List<JobApplication> applications;
+
     @Transient
+    @JsonView(Views.JobOfferDetail.class)
     private int numberOfApplications;
 
-
-
+    @PostLoad
+    public void postLoad() {
+        if (applications != null) {
+            this.numberOfApplications = applications.size();
+        } else {
+            this.numberOfApplications = 0;
+        }
+    }
 }

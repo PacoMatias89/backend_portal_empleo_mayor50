@@ -2,14 +2,20 @@ package me.franciscomolina.back_portal_empleo_mayor50.services;
 
 import me.franciscomolina.back_portal_empleo_mayor50.dto.CompanyDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
+
+
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.CompanyRepository;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobOfferRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +29,15 @@ public class CompanyService implements ICompanyService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private JobOfferRepository jobOfferRepository;
+
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
+
+    @Autowired
+    private IJobOfferService jobOfferService;
 
 
     @Override
@@ -114,4 +129,18 @@ public class CompanyService implements ICompanyService {
         companyRepository.delete(company);
         return company;
     }
+
+    @Override
+    public List<JobOffer> getJobOffers(Long id) {
+        Optional<Company> company = companyRepository.findById(id);
+        if (company.isPresent()) {
+            return jobOfferRepository.findByCompany(company.get());
+        }else {
+            throw new IllegalArgumentException("La compañía no fue encontrado:" + id);
+        }
+
+
+    }
+
+
 }

@@ -22,7 +22,7 @@ public class JobApplicationController {
     public ResponseEntity<?> createJobApplication(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal, @RequestBody JobApplicationDTO jobApplicationDTO) {
         try {
             Long idUser = userEntityPrincipal.getId();
-            Long idJobOffer = jobApplicationDTO.getJobOffer().getId();
+            Long idJobOffer = jobApplicationDTO.getJobOfferId();
             JobApplicationDTO jobApplicationResponse = jobApplicationService.applyToJob(jobApplicationDTO, idJobOffer, idUser);
             return ResponseEntity.ok(jobApplicationResponse);
         } catch (RuntimeException e) {

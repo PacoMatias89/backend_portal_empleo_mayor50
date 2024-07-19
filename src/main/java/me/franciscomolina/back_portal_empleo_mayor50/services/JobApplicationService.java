@@ -47,47 +47,23 @@ public class JobApplicationService implements IJobApplicationService {
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
-        JobOfferDto jobOfferDto = new JobOfferDto(
-                jobOffer.getId(),
-                jobOffer.getTitle(),
-                jobOffer.getDescription(),
-                jobOffer.getSalary(),
-                jobOffer.getRequirements(),
-                jobOffer.getLocation(),
-                jobOffer.getCreatedAt(),
-                jobOffer.getCompany() != null ? jobOffer.getCompany().getId() : null
-        );
-
         JobApplicationDTO responseDTO = new JobApplicationDTO(
-                savedJobApplication.getId(),
                 savedJobApplication.getUser().getId(),
-                jobOfferDto
+                savedJobApplication.getId()
+
         );
 
         return responseDTO;
     }
 
     @Override
-    public List<JobApplicationDTO> getJobApplication(Long userId) {
+    public List<JobApplication> getJobApplication(Long userId) {
         List<JobApplication> jobApplications = jobApplicationRepository.findByUserId(userId);
 
-        return jobApplications.stream().map(application -> {
-            JobOffer jobOffer = application.getJobOffer();
-            JobOfferDto jobOfferDto = new JobOfferDto(
-                    jobOffer.getId(),
-                    jobOffer.getTitle(),
-                    jobOffer.getDescription(),
-                    jobOffer.getSalary(),
-                    jobOffer.getRequirements(),
-                    jobOffer.getLocation(),
-                    jobOffer.getCreatedAt(),
-                    jobOffer.getCompany() != null ? jobOffer.getCompany().getId() : null
-            );
-            return new JobApplicationDTO(
-                    application.getId(),
-                    application.getUser().getId(),
-                    jobOfferDto
-            );
-        }).collect(Collectors.toList());
+        return jobApplications;
+
+
+
+
     }
 }

@@ -33,8 +33,6 @@ public class CompanyJobOfferController {
     @GetMapping("/getAllJobOffer")
     public ResponseEntity<?> getJobOffers() {
 
-
-
         return ResponseEntity.ok(jobOfferService.getJobOffers());
     }
 

@@ -1,10 +1,12 @@
 package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.UserDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IAuthenticationService;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IUserService;
+import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,7 @@ public class AuthenticationUserController {
     }
 
     @PostMapping("/sign-in")
+    @JsonView(Views.UserSignInView.class) // Aplicar la vista al endpoint
     public ResponseEntity<?> signIn(@RequestBody UserEntity client) {
         try {
             return new ResponseEntity<>(authenticationService.signInAndReturnJWT(client), HttpStatus.OK);

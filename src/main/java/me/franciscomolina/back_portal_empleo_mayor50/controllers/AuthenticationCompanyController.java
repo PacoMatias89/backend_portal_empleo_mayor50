@@ -1,10 +1,12 @@
 package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.CompanyDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IAuthenticationServiceCompany;
 import me.franciscomolina.back_portal_empleo_mayor50.services.ICompanyService;
+import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ public class AuthenticationCompanyController {
     private ICompanyService companyService;
 
     @PostMapping("/sign-up")
+
     public ResponseEntity<?> signUp(@Valid @RequestBody CompanyDto companyDto) {
         try {
             Company company = companyService.create(companyDto);
@@ -37,6 +40,7 @@ public class AuthenticationCompanyController {
     }
 
     @PostMapping("/sign-in")
+    @JsonView(Views.CompanyBasic.class)
     public ResponseEntity<?> signIn(@RequestBody Company companyDto) {
         try {
             return new ResponseEntity<>(serviceCompany.signInAndReturnJWTCompany(companyDto), HttpStatus.OK);

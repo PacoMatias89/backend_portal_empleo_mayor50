@@ -19,5 +19,5 @@ public interface IJobOfferService {
 
     JobOffer getJobOfferById(Long id);
 
-    //TODO: Implementar el resto de métodos si es necesario
+    List<JobOffer> getJobOffersByCompany(Long id);
 }
