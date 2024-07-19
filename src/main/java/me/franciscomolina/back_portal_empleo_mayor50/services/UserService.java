@@ -2,8 +2,10 @@ package me.franciscomolina.back_portal_empleo_mayor50.services;
 
 
 import me.franciscomolina.back_portal_empleo_mayor50.dto.UserDto;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.UserRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +28,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
 
     @Override
@@ -108,5 +114,17 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
 
         return user;
+    }
+
+    @Override
+    public List<JobApplication> getJobApplications(Long id) {
+
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("El usuario no fue encontrado: " + id));
+
+        return jobApplicationRepository.findByUser(user);
+
+
+
     }
 }

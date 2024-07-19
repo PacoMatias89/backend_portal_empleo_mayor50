@@ -42,7 +42,7 @@ public class WorkExperience {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference(value = "user-experiences")
     private UserEntity user;
 
     @Basic

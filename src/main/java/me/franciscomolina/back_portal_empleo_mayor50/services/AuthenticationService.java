@@ -1,7 +1,9 @@
 package me.franciscomolina.back_portal_empleo_mayor50.services;
 
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.WorkExperience;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.UserRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
@@ -31,7 +33,10 @@ public class AuthenticationService implements IAuthenticationService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private WorkExperienceService workExperienceService;
+    private IWorkExperienceService workExperienceService;
+
+    @Autowired
+    private IJobApplicationService jobApplicationService;
 
     @Override
     public UserEntity signInAndReturnJWT(UserEntity signInRequest) {
@@ -51,7 +56,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         //obtenemos la expriencia laboral
         // Obtener y calcular la experiencia laboral
-        List<WorkExperience> workExperiences = workExperienceService.getuserWorkExperience(sigInUser.getId());
+       /* List<WorkExperience> workExperiences = workExperienceService.getuserWorkExperience(sigInUser.getId());
         if (workExperiences != null) {
             sigInUser.setWorkExperiences(workExperiences);
             String totalExperience = workExperienceService.calculateTotalExperience(workExperiences);
@@ -59,10 +64,11 @@ public class AuthenticationService implements IAuthenticationService {
             System.out.println("Experiencia laboral recuperada: " + workExperiences);
         } else {
             System.out.println("No se encontró experiencia laboral para el usuario.");
-        }
+        }*/
 
 
-        workExperienceService.calculateTotalExperience(workExperiences);
+
+        //workExperienceService.calculateTotalExperience(workExperiences);
         return sigInUser;
     }
 }

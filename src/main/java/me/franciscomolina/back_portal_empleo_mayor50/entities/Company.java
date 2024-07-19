@@ -1,5 +1,6 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
 
 import java.time.LocalDate;
@@ -56,7 +58,6 @@ public class Company {
     @NotBlank(message = "La confirmación de la  password no puede estar vacío")
     private String confirmPasswordCompany;
 
-
     /*Datos de la empresa*/
     @Basic
     @Column(name = "company_name")
@@ -96,14 +97,10 @@ public class Company {
     @JsonManagedReference
     private List<JobOffer> jobOffers;
 
-
     @Basic
     @Column(name = "created_at")
     private LocalDate createdAt;
 
-
     @Transient
     private String token;
-
-
 }

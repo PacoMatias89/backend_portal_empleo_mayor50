@@ -1,6 +1,6 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -72,13 +72,16 @@ public class UserEntity {
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-experiences")
+    @JsonIgnore
     private List<WorkExperience> workExperiences;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user-applications")
+    @JsonIgnore
     private List<JobApplication> jobApplications;
 
-
     @Transient
+    @JsonIgnore
     private String totalExperience;
 }

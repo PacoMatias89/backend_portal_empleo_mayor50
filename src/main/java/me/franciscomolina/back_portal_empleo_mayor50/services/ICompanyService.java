@@ -17,4 +17,6 @@ public interface ICompanyService {
     Company editCompany(Long id, CompanyDto companyEntity);
 
     Company deleteCompany(Long id);
+
+
 }

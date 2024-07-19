@@ -17,5 +17,7 @@ public interface IJobOfferService {
 
     JobOffer deleteJobOffer(Long id);
 
+    JobOffer getJobOfferById(Long id);
+
     //TODO: Implementar el resto de métodos si es necesario
 }

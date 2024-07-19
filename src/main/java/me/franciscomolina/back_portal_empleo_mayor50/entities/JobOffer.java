@@ -1,12 +1,10 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "job_offers")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
+
 public class JobOffer {
 
     @Id
@@ -52,16 +53,22 @@ public class JobOffer {
     private String location;
 
     @Basic
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
+    //Saber las personas que han aplicado a la oferta JobOffer
+    @Getter
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<JobApplication> applications;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @JsonBackReference
     private Company company;
+
+    @Transient
+    private int numberOfApplications;
 
 
 

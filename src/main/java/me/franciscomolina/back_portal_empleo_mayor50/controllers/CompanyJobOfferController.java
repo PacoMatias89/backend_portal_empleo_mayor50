@@ -25,14 +25,15 @@ public class CompanyJobOfferController {
 
             jobOfferService.createJobOffer(jobOfferDto, id);
             return ResponseEntity.ok("Oferta de trabajo creada correctamente");
-        }catch (IllegalArgumentException e) {
+        }catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/getAllJobOffer")
     public ResponseEntity<?> getJobOffers() {
-        //TODO: Que no se vean las personas que han aplicado a la oferta de trabajo
+
+
 
         return ResponseEntity.ok(jobOfferService.getJobOffers());
     }
@@ -44,7 +45,18 @@ public class CompanyJobOfferController {
             Long id = company.getId();
             jobOfferService.updateJobOffer(id, jobOfferDto);
             return ResponseEntity.ok("Oferta de trabajo actualizada correctamente");
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteJobOffer(@AuthenticationPrincipal CompanyEntityPrincipal company, @RequestParam Long id) {
+        try {
+            jobOfferService.deleteJobOffer(id);
+            return ResponseEntity.ok("Oferta de trabajo eliminada correctamente");
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

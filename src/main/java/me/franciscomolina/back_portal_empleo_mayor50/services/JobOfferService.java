@@ -5,6 +5,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.dto.JobOfferDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.CompanyRepository;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobOfferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class JobOfferService implements IJobOfferService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
     @Override
     public JobOffer createJobOffer(JobOfferDto jobOfferDto, Long id) {
@@ -41,12 +45,17 @@ public class JobOfferService implements IJobOfferService {
 
     @Override
     public List<JobOffer> getJobOffers() {
-        //TODO:Que no se Pueda ver las personas que hayan aplicado a la oferta
+        List<JobOffer> jobOffers = jobOfferRepository.findAll();
 
+        // Contar las candidaturas para cada oferta
+        jobOffers.forEach(jobOffer -> {
+            int numberOfApplications = jobApplicationRepository.countApplicationsByJobOfferId(jobOffer.getId());
+            jobOffer.setNumberOfApplications(numberOfApplications);
+        });
 
-        return jobOfferRepository.findAll();
-
+        return jobOffers;
     }
+
 
     @Override
     public JobOffer updateJobOffer(Long id, JobOfferDto jobOffer) {
@@ -68,6 +77,17 @@ public class JobOfferService implements IJobOfferService {
 
     @Override
     public JobOffer deleteJobOffer(Long id) {
-        return null;
+        JobOffer jobOffer = jobOfferRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se ha encontrado la oferta de trabajo"));
+
+        jobOfferRepository.delete(jobOffer);
+        return jobOffer;
+    }
+
+    @Override
+    public JobOffer getJobOfferById(Long id) {
+
+        return jobOfferRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se ha encontrado la oferta de trabajo con ID: " + id));
     }
 }
