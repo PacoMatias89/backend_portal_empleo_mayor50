@@ -3,6 +3,7 @@ package me.franciscomolina.back_portal_empleo_mayor50.entities;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+import me.franciscomolina.back_portal_empleo_mayor50.model.JobApplicationStatus;
 import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 
 import java.time.LocalDate;
@@ -35,4 +36,9 @@ public class JobApplication {
     @Column(name = "created_at")
     @JsonView(Views.JobOfferDetail.class)
     private LocalDate createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    @JsonView(Views.JobOfferDetail.class)
+    private JobApplicationStatus status;
 }

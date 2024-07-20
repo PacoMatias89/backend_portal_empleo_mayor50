@@ -58,7 +58,6 @@ public class JobOffer {
     private Company company;
 
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
-    //@JsonView(Views.JobOfferDetail.class)
     private List<JobApplication> applications;
 
     @Transient

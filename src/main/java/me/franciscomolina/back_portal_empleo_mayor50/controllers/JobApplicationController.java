@@ -1,7 +1,10 @@
 package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 
 import jakarta.validation.Valid;
-import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationDTO;
+import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationCreateDto;
+import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationUpdateStatusDto;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
+import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobApplicationService;
 import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +22,25 @@ public class JobApplicationController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> createJobApplication(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal, @RequestBody JobApplicationDTO jobApplicationDTO) {
+    public ResponseEntity<?> createJobApplication(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal, @RequestBody JobApplicationCreateDto jobApplicationCreateDto) {
         try {
             Long idUser = userEntityPrincipal.getId();
-            Long idJobOffer = jobApplicationDTO.getJobOfferId();
-            JobApplicationDTO jobApplicationResponse = jobApplicationService.applyToJob(jobApplicationDTO, idJobOffer, idUser);
+            Long idJobOffer = jobApplicationCreateDto.getJobOfferId();
+            JobApplicationCreateDto jobApplicationResponse = jobApplicationService.applyToJob(jobApplicationCreateDto, idJobOffer, idUser);
+            return ResponseEntity.ok(jobApplicationResponse);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/updateJobApplicationStatus/{idJobOffer}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateJobApplicationStatus(@Valid @AuthenticationPrincipal CompanyEntityPrincipal companyEntityPrincipal,
+                                                        @RequestBody JobApplicationUpdateStatusDto status,
+                                                        @PathVariable Long idJobOffer) {
+        try {
+            Long idUser = companyEntityPrincipal.getId();
+            JobApplicationUpdateStatusDto jobApplicationResponse = jobApplicationService.updateJobApplicationStatus(status, idJobOffer, idUser);
             return ResponseEntity.ok(jobApplicationResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

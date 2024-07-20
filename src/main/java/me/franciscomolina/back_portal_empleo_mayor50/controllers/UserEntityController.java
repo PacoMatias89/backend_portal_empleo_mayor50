@@ -2,7 +2,6 @@ package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
-import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationDTO;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.UserDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;

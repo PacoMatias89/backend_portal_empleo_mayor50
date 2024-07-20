@@ -1,9 +1,11 @@
 package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobOfferDto;
 import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobOfferService;
+import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,7 @@ public class CompanyJobOfferController {
     }
 
     @GetMapping("/getAllJobOffer")
+    @JsonView(Views.JobOfferDetail.class)
     public ResponseEntity<?> getJobOffers() {
 
         return ResponseEntity.ok(jobOfferService.getJobOffers());
