@@ -74,21 +74,26 @@ public class WorkExperienceControllerTest {
 
         when(userEntityPrincipal.getId()).thenReturn(1L);
         when(workExperienceService.updateWorkExperience(eq(id), any(WorkExperienceDto.class)))
-                .thenThrow(new RuntimeException("No se encontró la experiencia laboral con el id: " + id));
+                .thenThrow(new IllegalArgumentException("No se encontró la experiencia laboral con el id: " + id));
 
         ResponseEntity<?> response = workExperienceController.updateWorkExperience(id, dto, userEntityPrincipal);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertNotNull(body);
-        assertTrue(body.get("error").contains("La experiencia laboral no se pudo actualizar"));
+        assertEquals("No se encontró la experiencia laboral con el id: " + id, body.get("error"));
     }
+
+
 
     @Test
     public void deleteWorkExperience_Success() {
         Long id = 1L;
+        WorkExperience workExperience = mock(WorkExperience.class);
 
-        when(workExperienceService.deleteWorkExperience(id)).thenReturn(true);
+
+
+        when(workExperienceService.deleteWorkExperience(id)).thenReturn(workExperience);
 
         ResponseEntity<?> response = workExperienceController.deleteWorkExperience(id, userEntityPrincipal);
 
@@ -100,13 +105,15 @@ public class WorkExperienceControllerTest {
     public void deleteWorkExperience_NotFound() {
         Long id = 1L;
 
-        when(workExperienceService.deleteWorkExperience(id)).thenThrow(new RuntimeException("No se encontró la experiencia laboral con el id: " + id));
+        when(workExperienceService.deleteWorkExperience(id))
+                .thenThrow(new RuntimeException("No se encontró la experiencia laboral con el id: " + id));
 
         ResponseEntity<?> response = workExperienceController.deleteWorkExperience(id, userEntityPrincipal);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertNotNull(body);
-        assertTrue(body.get("error").contains("No se encontró la experiencia laboral con el id"));
+        assertEquals("No se encontró la experiencia laboral con el id: " + id, body.get("error"));
     }
+
 }

@@ -55,13 +55,15 @@ public class UserEntityController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUser(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntity){
-
-        try{
+        try {
             Long id = userEntity.getId();
             UserEntity userDelete = userService.deleteClient(id);
             return new ResponseEntity<>("Usuario " + userDelete.getName() + " ha sido eliminado", HttpStatus.OK);
-        }catch(UsernameNotFoundException e){
+        } catch (UsernameNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Error inesperado: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

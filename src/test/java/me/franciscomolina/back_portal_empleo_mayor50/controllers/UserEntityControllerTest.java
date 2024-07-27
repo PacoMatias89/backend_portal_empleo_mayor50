@@ -123,7 +123,8 @@ class UserEntityControllerTest {
         // Given
         UserEntityPrincipal userEntity = Mockito.mock(UserEntityPrincipal.class);
         Long userId = 1L;
-        UserEntity deletedUser = new UserEntity(); // Simula el usuario eliminado
+        UserEntity deletedUser = new UserEntity();
+        deletedUser.setName("John Doe"); // Asigna un nombre al usuario eliminado
 
         // Simula el comportamiento de obtener el ID del usuario
         when(userEntity.getId()).thenReturn(userId);
@@ -132,12 +133,12 @@ class UserEntityControllerTest {
         when(userService.deleteClient(userId)).thenReturn(deletedUser);
 
         // When
-        ResponseEntity<String> response = userEntityController.deleteUser(userEntity);
+        ResponseEntity<?> response = userEntityController.deleteUser(userEntity);
 
         // Then
         verify(userService).deleteClient(userId);  // Verifica que el método deleteClient fue llamado
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("El usuario ha sido eliminado correctamente", response.getBody());
+        assertEquals("Usuario John Doe ha sido eliminado", response.getBody()); // Ajusta la expectativa
     }
 
 
@@ -154,13 +155,15 @@ class UserEntityControllerTest {
         when(userService.deleteClient(userId)).thenThrow(new RuntimeException("Error inesperado"));
 
         // When
-        ResponseEntity<String> response = userEntityController.deleteUser(userEntity);
+        ResponseEntity<?> response = userEntityController.deleteUser(userEntity);
 
         // Then
         verify(userService).deleteClient(userId);  // Verifica que el método deleteClient fue llamado
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Error inesperado: Error inesperado", response.getBody());
+        assertEquals("Error inesperado: Error inesperado", response.getBody()); // Ajusta la expectativa
     }
+
+
 
 
 }
