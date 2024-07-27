@@ -1,9 +1,6 @@
 package me.franciscomolina.back_portal_empleo_mayor50.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

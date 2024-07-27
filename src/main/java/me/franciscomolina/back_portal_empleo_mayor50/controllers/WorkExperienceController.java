@@ -58,5 +58,31 @@ public class WorkExperienceController {
         return ResponseEntity.ok(response);
     }
 
-    //Todo: actuliazar y eliminar experiencias laborales
+    @PutMapping("/update/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateWorkExperience(@PathVariable Long id, @RequestBody @Valid WorkExperienceDto workExperienceDto, @AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal) {
+        try {
+            Long userId = userEntityPrincipal.getId();
+            workExperienceDto.setUserId(userId);
+            workExperienceService.updateWorkExperience(id, workExperienceDto);
+            return new ResponseEntity<>("La experiencia laboral ha sido actualizada correctamente", HttpStatus.OK);
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteWorkExperience(@PathVariable Long id, @AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal) {
+        try {
+            workExperienceService.deleteWorkExperience(id);
+            return new ResponseEntity<>("La experiencia laboral ha sido eliminada correctamente", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "No se encontró la experiencia laboral con el id: " + id);
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
+    }
 }
