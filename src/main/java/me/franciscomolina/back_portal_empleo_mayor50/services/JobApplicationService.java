@@ -55,10 +55,9 @@ public class JobApplicationService implements IJobApplicationService {
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
         JobApplicationCreateDto responseDTO = new JobApplicationCreateDto(
-                savedJobApplication.getUser().getId(),
-                savedJobApplication.getId(),
+                savedJobApplication.getJobOffer().getId(), // ID de la oferta de trabajo
+                savedJobApplication.getUser().getId(), // ID del usuario
                 savedJobApplication.getStatus().name()
-
         );
 
         return responseDTO;

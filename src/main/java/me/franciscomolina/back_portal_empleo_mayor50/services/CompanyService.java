@@ -48,7 +48,7 @@ public class CompanyService implements ICompanyService {
 
         Company companyEntity = new Company();
 
-        /*Datos para poder acceder al portal*/
+        /*Data to access the portal*/
         companyEntity.setName(company.getName());
         companyEntity.setLastname(company.getLastname());
         companyEntity.setEmail(company.getEmail());
