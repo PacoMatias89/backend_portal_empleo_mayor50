@@ -1,0 +1,10 @@
+package me.franciscomolina.back_portal_empleo_mayor50.services;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+public interface IFileStoraService {
+
+    public String saveFile(MultipartFile file, Long userId)throws IOException;
+}

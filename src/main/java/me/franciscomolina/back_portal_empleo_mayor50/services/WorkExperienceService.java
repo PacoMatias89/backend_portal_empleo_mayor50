@@ -7,6 +7,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.repositories.WorkExperience
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -17,6 +18,9 @@ public class WorkExperienceService implements IWorkExperienceService {
 
     @Autowired
     private WorkExperienceRepository workExperienceRepository;
+
+    @Autowired
+    private IFileStoraService fileStorageService;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,14 +39,13 @@ public class WorkExperienceService implements IWorkExperienceService {
     public Optional<WorkExperience> getWorkExperienceById(Long id) {
         return workExperienceRepository.findById(id);
     }
-
     @Override
     public WorkExperience saveWorkExperience(WorkExperienceDto workExperienceDto) {
         WorkExperience workExperience = new WorkExperience();
         workExperience.setCompanyName(workExperienceDto.getCompanyName());
         workExperience.setPosition(workExperienceDto.getPosition());
 
-        // Validar que las fechas no sean null y no estén en el futuro
+        // Validar que las fechas no sean nulas y no estén en el futuro
         LocalDate startDate = workExperienceDto.getStartDate();
         LocalDate endDate = workExperienceDto.getEndDate();
 
@@ -66,8 +69,19 @@ public class WorkExperienceService implements IWorkExperienceService {
         workExperience.setDescription(workExperienceDto.getDescription());
         userRepository.findById(workExperienceDto.getUserId()).ifPresent(workExperience::setUser);
 
+        // Si se ha subido un archivo, guardarlo en el sistema de archivos y almacenar la ruta
+        if (workExperienceDto.getFile() != null && !workExperienceDto.getFile().isEmpty()) {
+            try {
+                String filePath = fileStorageService.saveFile(workExperienceDto.getFile(), workExperienceDto.getUserId());
+                workExperience.setFilePath(filePath);  // Guardamos la ruta en la base de datos
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
+            }
+        }
+
         return workExperienceRepository.save(workExperience);
     }
+
 
     @Override
     public WorkExperience updateWorkExperience(Long id, WorkExperienceDto workExperienceDto) {

@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/authentication/sign-in").permitAll()
                         .requestMatchers("/api/authentication-company/sign-up").permitAll()
                         .requestMatchers("/api/authentication-company/sign-in").permitAll()
-                        .requestMatchers("/api/company/job-offers/getAllJobOffer").permitAll() // Todos pueden ver ofertas de trabajo)
+                        .requestMatchers("/api/company/job-offers/getAllJobOffer").permitAll()
                         .requestMatchers("/api/company/job-offers").hasRole("COMPANY")
                         .requestMatchers("/api/company/job-application/updateJobApplicationStatus").hasRole("COMPANY")
                         .anyRequest().authenticated()
@@ -78,7 +78,10 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:3000") // Dirección del frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
+                        .allowedHeaders("*"); // Permitir todos los encabezados
             }
         };
     }

@@ -29,6 +29,11 @@ public class JobOffer {
     private String title;
 
     @Basic
+    @Column(name = "name_company")
+    @JsonView(Views.JobOfferDetail.class)
+    private String nameCompany;
+
+    @Basic
     @Column(name = "description")
     @JsonView(Views.JobOfferDetail.class)
     private String description;
@@ -59,6 +64,9 @@ public class JobOffer {
 
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
     private List<JobApplication> applications;
+
+    @OneToMany(mappedBy = "jobOffer")
+    private List<FavoritesJobs> favoriteJobs;
 
     @Transient
     @JsonView(Views.JobOfferDetail.class)

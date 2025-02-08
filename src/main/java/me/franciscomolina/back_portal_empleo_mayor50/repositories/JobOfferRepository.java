@@ -18,5 +18,9 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
 
     List<JobOffer> findByCompany(Company company);
 
+    //Buscar el nombre de la empresa por el id de la oferta de trabajo
+    @Query("SELECT j.company.companyName FROM JobOffer j WHERE j.id = :id")
+    String findNameCompanyByJobOfferId(@Param("id") Long id);
+
 
 }

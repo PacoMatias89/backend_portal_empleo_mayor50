@@ -45,7 +45,8 @@ public class CompanyDto {
 
     @NotNull(message = "Tiene que ingresar un nombre de empresa")
     @NotBlank(message = "El nombre de la empresa no puede estar vacío")
-    @Pattern(regexp = "[0-9A-Za-zAÑáéióúAEÍO6¡!¿?@$%()=+-€/.,~\\s]{1,50}", message = "El nombre debe contener letras, espacios y opcionalmente números.")
+    @Pattern(regexp = "[0-9A-Za-zAÑáéióúAEÍO6¡!¿?@$%()=+-€/.,~&\\s]{1,50}",
+            message = "El nombre debe contener letras, espacios y opcionalmente números.")
     private String companyName;
 
     @NotNull(message = "El teléfono de contacto no puede ser nulo")

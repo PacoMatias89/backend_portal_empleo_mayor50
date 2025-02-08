@@ -62,6 +62,13 @@ public class UserEntity {
     @JsonView(Views.UserSignInView.class)
     private String token;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserFile> userFiles;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FavoritesJobs> favoritesJobs;
+
+
     @Basic
     @Column(name = "created_at")
     @JsonView(Views.UserSignInView.class)

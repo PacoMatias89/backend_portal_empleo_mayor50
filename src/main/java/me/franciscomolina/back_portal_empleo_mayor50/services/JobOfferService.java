@@ -26,6 +26,8 @@ public class JobOfferService implements IJobOfferService {
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
 
+    private Company company;
+
     @Override
     public JobOffer createJobOffer(JobOfferDto jobOfferDto, Long id) {
         Company company = companyRepository.findById(id)
@@ -38,7 +40,8 @@ public class JobOfferService implements IJobOfferService {
         jobOffer.setRequirements(jobOfferDto.getRequirements());
         jobOffer.setLocation(jobOfferDto.getLocation());
         jobOffer.setCreatedAt(LocalDate.now());
-        jobOffer.setCompany(company); // Asigna la empresa a la oferta de trabajo
+        jobOffer.setCompany(company);// Asigna la empresa a la oferta de trabajo
+
 
         return jobOfferRepository.save(jobOffer);
     }
@@ -46,6 +49,15 @@ public class JobOfferService implements IJobOfferService {
     @Override
     public List<JobOffer> getJobOffers() {
         List<JobOffer> jobOffers = jobOfferRepository.findAll();
+
+        // Asignar el nombre de la empresa directamente desde la relación
+        jobOffers.forEach(jobOffer -> {
+            if(jobOffer.getCompany() != null) {
+                String nameCompany = jobOfferRepository.findNameCompanyByJobOfferId(jobOffer.getId());
+                jobOffer.setNameCompany(nameCompany);
+            }
+
+        });
 
         // Contar las candidaturas para cada oferta
         jobOffers.forEach(jobOffer -> {
