@@ -20,4 +20,6 @@ public interface IJobOfferService {
     JobOffer getJobOfferById(Long id);
 
     List<JobOffer> getJobOffersByCompany(Long id);
+
+    List<JobOffer>getJobOfferByIdCompany(Long id);
 }

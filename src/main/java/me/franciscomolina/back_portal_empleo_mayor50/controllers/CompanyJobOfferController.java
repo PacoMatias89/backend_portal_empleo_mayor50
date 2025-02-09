@@ -39,6 +39,12 @@ public class CompanyJobOfferController {
         return ResponseEntity.ok(jobOfferService.getJobOffers());
     }
 
+    @GetMapping("/getJobOfferByIdCompany/{id}")
+    @JsonView(Views.JobOfferDetail.class)
+    public ResponseEntity<?> getJobOfferByIdCompany(@PathVariable Long id) {
+        return ResponseEntity.ok(jobOfferService.getJobOfferByIdCompany(id));
+    }
+
     @PutMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateJobOffer(@AuthenticationPrincipal CompanyEntityPrincipal company, @RequestBody JobOfferDto jobOfferDto) {

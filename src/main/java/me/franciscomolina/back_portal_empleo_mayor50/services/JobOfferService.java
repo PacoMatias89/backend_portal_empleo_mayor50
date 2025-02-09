@@ -108,4 +108,9 @@ public class JobOfferService implements IJobOfferService {
         return jobOfferRepository.findByCompany(companyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No se ha encontrado la empresa con ID: " + id)));
     }
+
+    @Override
+    public List<JobOffer> getJobOfferByIdCompany(Long id) {
+        return jobOfferRepository.findJobOfferByCompanyId(id);
+    }
 }
