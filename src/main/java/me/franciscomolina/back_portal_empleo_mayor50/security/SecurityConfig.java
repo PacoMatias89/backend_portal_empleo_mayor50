@@ -82,7 +82,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000") // Dirección del frontend
+                        .allowedOrigins("https://portal-empleo.netlify.app") // Dirección del frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
                         .allowedHeaders("*"); // Permitir todos los encabezados
             }

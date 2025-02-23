@@ -5,6 +5,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationCreateDto
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationUpdateStatusDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
+import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class JobApplicationController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> createJobApplication(@Valid @AuthenticationPrincipal CompanyEntityPrincipal companyEntityPrincipal,
+    public ResponseEntity<?> createJobApplication(@Valid @AuthenticationPrincipal UserEntityPrincipal companyEntityPrincipal,
                                                   @RequestBody JobApplicationCreateDto jobApplicationCreateDto) {
         try {
             Long idUser = companyEntityPrincipal.getId(); // Obtener el usuario desde el principal

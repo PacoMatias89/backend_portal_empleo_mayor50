@@ -86,9 +86,10 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<scope>annotationProcessor</scope>
-			<version>1.18.36</version>
+			<version>1.18.24</version>
+			<scope>provided</scope> <!-- O 'compile', según corresponda -->
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

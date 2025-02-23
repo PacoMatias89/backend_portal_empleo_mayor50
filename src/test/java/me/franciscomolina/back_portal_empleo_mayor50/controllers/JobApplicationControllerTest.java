@@ -3,6 +3,7 @@ package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationCreateDto;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationUpdateStatusDto;
 import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
+import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class JobApplicationControllerTest {
         JobApplicationCreateDto jobApplicationCreateDto = new JobApplicationCreateDto();
         jobApplicationCreateDto.setJobOfferId(1L);
 
-        CompanyEntityPrincipal userEntityPrincipal = mock(CompanyEntityPrincipal.class);
+        UserEntityPrincipal userEntityPrincipal = mock(UserEntityPrincipal.class);
         when(userEntityPrincipal.getId()).thenReturn(1L);
 
         when(jobApplicationService.applyToJob(any(JobApplicationCreateDto.class), eq(1L), eq(1L)))
@@ -53,7 +54,7 @@ class JobApplicationControllerTest {
         JobApplicationCreateDto jobApplicationCreateDto = new JobApplicationCreateDto();
         jobApplicationCreateDto.setJobOfferId(1L);
 
-        CompanyEntityPrincipal userEntityPrincipal = mock(CompanyEntityPrincipal.class);
+        UserEntityPrincipal userEntityPrincipal = mock(UserEntityPrincipal.class);
         when(userEntityPrincipal.getId()).thenReturn(1L);
 
         when(jobApplicationService.applyToJob(any(JobApplicationCreateDto.class), eq(1L), eq(1L)))
