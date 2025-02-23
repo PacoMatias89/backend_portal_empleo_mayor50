@@ -2,6 +2,7 @@ package me.franciscomolina.back_portal_empleo_mayor50.repositories;
 
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,8 +22,17 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     List<JobApplication> findByUser(UserEntity user);
 
+    @Query("SELECT ja FROM JobApplication ja JOIN ja.jobOffer jo WHERE jo.company.id = :companyId")
+    List<JobApplication> findByCompanyId(@Param("companyId") Long companyId);
+
+
     @Query("SELECT COUNT(a) FROM JobApplication a WHERE a.jobOffer.id = :jobOfferId")
     int countApplicationsByJobOfferId(@Param("jobOfferId") Long jobOfferId);
+
+    //Contar el número total de aplicaciones por el id de la empresa
+    @Query("SELECT COUNT(a) FROM JobApplication a WHERE a.jobOffer.company.id = :companyId")
+    int countTotalApplicationsByCompanyId(@Param("companyId") Long companyId);
+
 
 
 

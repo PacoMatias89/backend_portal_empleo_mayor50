@@ -32,6 +32,12 @@ public class CompanyJobOfferController {
         }
     }
 
+    @GetMapping("/getJobOfferById/{id}")
+    @JsonView(Views.JobOfferDetail.class)
+    public ResponseEntity<?> getJobOfferById(@PathVariable Long id) {
+        return ResponseEntity.ok(jobOfferService.getJobOfferById(id));
+    }
+
     @GetMapping("/getAllJobOffer")
     @JsonView(Views.JobOfferDetail.class)
     public ResponseEntity<?> getJobOffers() {

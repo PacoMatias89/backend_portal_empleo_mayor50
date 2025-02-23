@@ -22,4 +22,14 @@ public interface IJobOfferService {
     List<JobOffer> getJobOffersByCompany(Long id);
 
     List<JobOffer>getJobOfferByIdCompany(Long id);
+
+    int getTotalViewsByCompany(Long companyId);
+
+    void incrementViews(Long jobId);
+
+    int countApplicationsByCompanyId(Long companyId);
+
+    int countJobOffersByCompanyId(Long companyId);
+
+    boolean existsById(Long jobId);
 }

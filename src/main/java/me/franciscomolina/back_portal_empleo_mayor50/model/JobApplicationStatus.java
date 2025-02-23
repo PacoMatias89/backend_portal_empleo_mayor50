@@ -4,5 +4,7 @@ public enum JobApplicationStatus {
     INSCRITO,
     CV_LEIDO,
     EN_PROCESO_DE_SELECCION,
+    RECHAZADO,
+    ACEPTADO,
     DESCARTADO
 }

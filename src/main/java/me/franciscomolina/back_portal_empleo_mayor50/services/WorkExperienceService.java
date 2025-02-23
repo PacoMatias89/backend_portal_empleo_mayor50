@@ -134,15 +134,35 @@ public class WorkExperienceService implements IWorkExperienceService {
 
     @Override
     public String calculateTotalExperience(List<WorkExperience> workExperiences) {
-        Period totalPeriod = Period.of(0, 0, 0);
+        Period totalPeriod = Period.of(0, 0, 0);  // Inicializa un periodo vacío
 
+        // Itera sobre las experiencias laborales para calcular la duración total
         for (WorkExperience exp : workExperiences) {
             if (exp.getStartDate() != null && exp.getEndDate() != null) {
                 Period period = Period.between(exp.getStartDate(), exp.getEndDate());
-                totalPeriod = totalPeriod.plus(period);
+                totalPeriod = totalPeriod.plus(period);  // Suma el periodo de cada experiencia laboral
             }
         }
 
-        return totalPeriod.getYears() + " años " + totalPeriod.getMonths() + " meses " + totalPeriod.getDays() + " días";
+        // Ajuste para asegurarse de que los meses y días no superen los límites
+        int totalYears = totalPeriod.getYears();
+        int totalMonths = totalPeriod.getMonths();
+        int totalDays = totalPeriod.getDays();
+
+        // Si los meses son más de 12, los convertimos en años
+        if (totalMonths >= 12) {
+            totalYears += totalMonths / 12;
+            totalMonths = totalMonths % 12;
+        }
+
+        // Si los días son más de 30, los convertimos en meses (aproximadamente)
+        if (totalDays >= 30) {
+            totalMonths += totalDays / 30;
+            totalDays = totalDays % 30;
+        }
+
+        // Devuelve el resultado con el formato adecuado
+        return totalYears + " años " + totalMonths + " meses " + totalDays + " días";
     }
+
 }

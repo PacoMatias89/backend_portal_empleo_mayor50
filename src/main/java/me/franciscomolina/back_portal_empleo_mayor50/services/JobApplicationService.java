@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class JobApplicationService implements IJobApplicationService {
@@ -30,8 +29,8 @@ public class JobApplicationService implements IJobApplicationService {
 
     @Override
     public JobApplicationCreateDto applyToJob(JobApplicationCreateDto jobApplicationCreateDto, Long idJobOffer, Long idUser) {
-        Optional<JobApplication> existingJobApplication = jobApplicationRepository.findByJobOfferIdAndUserId(idJobOffer, idUser);
-        if (existingJobApplication.isPresent()) {
+        // Verifica si el usuario ya ha aplicado a la oferta
+        if (jobApplicationRepository.findByJobOfferIdAndUserId(idJobOffer, idUser).isPresent()) {
             throw new RuntimeException("Ya has aplicado a esta oferta de trabajo");
         }
 
@@ -46,7 +45,6 @@ public class JobApplicationService implements IJobApplicationService {
         jobApplication.setJobOffer(jobOffer);
         jobApplication.setCreatedAt(LocalDate.now());
 
-        //Compruebo que el estado de la oferta de trabajo no sea null y si lo es, lo cambio a INSCRITO
         JobApplicationStatus status = jobApplicationCreateDto.getStatus() != null
                 ? JobApplicationStatus.valueOf(jobApplicationCreateDto.getStatus().toUpperCase())
                 : JobApplicationStatus.INSCRITO;
@@ -54,37 +52,35 @@ public class JobApplicationService implements IJobApplicationService {
 
         JobApplication savedJobApplication = jobApplicationRepository.save(jobApplication);
 
-        JobApplicationCreateDto responseDTO = new JobApplicationCreateDto(
-                savedJobApplication.getJobOffer().getId(), // ID de la oferta de trabajo
-                savedJobApplication.getUser().getId(), // ID del usuario
+        return new JobApplicationCreateDto(
+                savedJobApplication.getJobOffer().getId(),
+                savedJobApplication.getUser().getId(),
                 savedJobApplication.getStatus().name()
         );
-
-        return responseDTO;
     }
 
     @Override
     public List<JobApplication> getJobApplication(Long userId) {
-        List<JobApplication> jobApplications = jobApplicationRepository.findByUserId(userId);
-
-        return jobApplications;
-
-
-
-
+        return jobApplicationRepository.findByUserId(userId);
     }
 
     @Override
-    public JobApplicationUpdateStatusDto updateJobApplicationStatus(JobApplicationUpdateStatusDto status, Long idJobOffer, Long idUser) {
+    public List<JobApplication> getJobApplicationsByCompany(Long companyId) {
+        return jobApplicationRepository.findByCompanyId(companyId);
+    }
+
+    @Override
+    public JobApplicationUpdateStatusDto updateJobApplicationStatus(JobApplicationUpdateStatusDto statusDto, Long idJobOffer, Long idUser) {
         JobApplication jobApplication = jobApplicationRepository.findByJobOfferIdAndUserId(idJobOffer, idUser)
                 .orElseThrow(() -> new RuntimeException("No se ha encontrado la solicitud de empleo"));
 
-        JobApplicationStatus jobApplicationStatus = JobApplicationStatus.valueOf(status.getStatus().toUpperCase());
-        jobApplication.setStatus(jobApplicationStatus);
-        jobApplicationRepository.save(jobApplication);
-
-        // Devuelve el DTO actualizado
-        return new JobApplicationUpdateStatusDto(jobApplication.getStatus().name());
+        try {
+            JobApplicationStatus jobApplicationStatus = JobApplicationStatus.valueOf(statusDto.getStatus().toUpperCase());
+            jobApplication.setStatus(jobApplicationStatus);
+            jobApplicationRepository.save(jobApplication);
+            return new JobApplicationUpdateStatusDto(jobApplication.getStatus().name());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Estado no válido: " + statusDto.getStatus());
+        }
     }
-
 }

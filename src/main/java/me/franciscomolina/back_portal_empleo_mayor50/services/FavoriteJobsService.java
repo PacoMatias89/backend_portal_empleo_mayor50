@@ -67,10 +67,24 @@ public class FavoriteJobsService implements IFavoriteJobService{
     @Override
     public List<FavoritesJobs> getFavoriteJobs() {
 
-
         return favoriteJobsRepository.findAll();
 
     }
+
+    @Override
+    public List<JobOffer> getFavoriteJobs(Long userId) {
+        // Aquí obtenemos todas las ofertas favoritas de un usuario
+        if (userId == null) {
+            throw new RuntimeException("El ID del usuario no puede ser nulo");
+        }
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("No se ha encontrado el usuario"));
+
+        System.out.println("User ID: " + userId);  // Log para verificar el ID del usuario
+        return favoriteJobsRepository.findAllFavoriteJobsByUserId(user.getId());
+    }
+
 
 
 }

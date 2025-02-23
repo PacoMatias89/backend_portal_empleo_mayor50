@@ -1,6 +1,9 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
@@ -15,7 +18,6 @@ import java.util.List;
 @Entity
 @Table(name = "job_offers")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class JobOffer {
 
     @Id
@@ -60,17 +62,32 @@ public class JobOffer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties("jobOffers")
     private Company company;
 
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
     private List<JobApplication> applications;
 
-    @OneToMany(mappedBy = "jobOffer")
+    @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
+    @JsonBackReference("jobOffer-favorites") // Se ignora al serializar para romper el ciclo
     private List<FavoritesJobs> favoriteJobs;
 
     @Transient
     @JsonView(Views.JobOfferDetail.class)
     private int numberOfApplications;
+
+    @Basic
+    @Column(name = "views", nullable = false, columnDefinition = "int default 0")
+    @JsonView(Views.JobOfferDetail.class)
+    private Integer views = 0;
+
+    @PrePersist
+    public void setDefaultValues() {
+        // Garantiza que views tenga valor 0 si no se ha asignado un valor antes de persistir
+        if (this.views == null) {
+            this.views = 0;
+        }
+    }
 
     @PostLoad
     public void postLoad() {

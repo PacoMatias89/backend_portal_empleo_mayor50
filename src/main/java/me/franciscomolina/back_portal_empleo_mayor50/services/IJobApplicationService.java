@@ -13,5 +13,7 @@ public interface IJobApplicationService {
 
     List<JobApplication> getJobApplication(Long id);
 
+    List<JobApplication> getJobApplicationsByCompany(Long companyId);
+
     JobApplicationUpdateStatusDto updateJobApplicationStatus(JobApplicationUpdateStatusDto status, Long idJobOffer, Long idUser);
 }

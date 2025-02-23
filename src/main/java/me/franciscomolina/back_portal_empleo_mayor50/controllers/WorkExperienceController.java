@@ -3,6 +3,7 @@ package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 import jakarta.validation.Valid;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.WorkExperienceDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.WorkExperience;
+import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IWorkExperienceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,23 +40,56 @@ public class WorkExperienceController {
         }
     }
 
-
-
     @GetMapping("/get_work-experiences")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> getWorkExperiences(@AuthenticationPrincipal UserEntityPrincipal userEntityPrincipal) {
-        Long userId = userEntityPrincipal.getId();
-        List<WorkExperience> workExperiences = workExperienceService.getuserWorkExperience(userId);
-
-        // Calculamos la experiencia laboral y la agregamos al final del JSON
-        workExperiences.forEach(exp -> exp.setExperience(exp.getExperience()));
-        String totalExperience = workExperienceService.calculateTotalExperience(workExperiences);
-
+    public ResponseEntity<Map<String, Object>> getWorkExperiences(@RequestParam(required = false) Long userId, @AuthenticationPrincipal Object principal) {
         Map<String, Object> response = new HashMap<>();
-        response.put("workExperiences", workExperiences);
-        response.put("totalExperience", totalExperience);
+
+        // Verificar si el principal es un Usuario o una Compañía
+        if (principal instanceof UserEntityPrincipal) {
+            UserEntityPrincipal userEntityPrincipal = (UserEntityPrincipal) principal;
+            Long currentUserId = userEntityPrincipal.getId();
+            List<WorkExperience> workExperiences = workExperienceService.getuserWorkExperience(currentUserId);
+
+            // Calculamos la experiencia laboral y la agregamos al final del JSON
+            workExperiences.forEach(exp -> exp.setExperience(exp.getExperience()));
+            String totalExperience = workExperienceService.calculateTotalExperience(workExperiences);
+
+            response.put("workExperiences", workExperiences);
+            response.put("totalExperience", totalExperience);
+
+        } else if (principal instanceof CompanyEntityPrincipal) {
+            // Verificar si la empresa proporcionó un userId para acceder a las experiencias
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Debe proporcionar un userId válido para ver las experiencias laborales"));
+            }
+
+            CompanyEntityPrincipal companyEntityPrincipal = (CompanyEntityPrincipal) principal;
+            Long companyId = companyEntityPrincipal.getId();
+            // Obtener las experiencias laborales del usuario con el userId proporcionado
+            List<WorkExperience> companyWorkExperiences = workExperienceService.getuserWorkExperience(userId);
+
+            response.put("companyWorkExperiences", companyWorkExperiences);
+        } else {
+            // Si el principal no es ni un usuario ni una compañía, devolver error con un Map vacío
+            response.put("error", "Acceso no autorizado.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get_work-experiences/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getWorkExperienceById(@PathVariable Long id) {
+        try {
+            WorkExperience workExperience = workExperienceService.getWorkExperienceById(id).orElseThrow();
+            return new ResponseEntity<>(workExperience, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "No se encontró la experiencia laboral con el id: " + id);
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/update/{id}")

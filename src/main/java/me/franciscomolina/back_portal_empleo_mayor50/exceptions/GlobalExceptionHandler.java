@@ -26,11 +26,10 @@ public class GlobalExceptionHandler {
         Map<String, String> errorResponse = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
-                        FieldError::getDefaultMessage  // Utiliza el mensaje predeterminado de la validación
+                        FieldError::getDefaultMessage
                 ));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
@@ -39,7 +38,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<Map<String, String>> handleDateTimeParseException(DateTimeParseException ex, WebRequest request) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -47,6 +45,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-
-
+    @ExceptionHandler(ApplicationAlreadyMadeException.class)
+    public ResponseEntity<Map<String, String>> handleApplicationAlreadyMadeException(ApplicationAlreadyMadeException ex, WebRequest request) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());  // El mensaje de la excepción personalizada
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);  // Usa el código de estado que consideres adecuado
+    }
 }

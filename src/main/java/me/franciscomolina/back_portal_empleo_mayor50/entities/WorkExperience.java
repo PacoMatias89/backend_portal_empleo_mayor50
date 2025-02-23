@@ -68,21 +68,32 @@ public class WorkExperience {
 
     public String getExperience() {
         if (startDate != null && endDate != null) {
+            if (endDate.isBefore(startDate)) {
+                return "Fecha de finalización no válida (anterior a la fecha de inicio).";
+            }
+
+            // Calcular la diferencia entre las fechas
             Period period = Period.between(startDate, endDate);
-            return period.getYears() + " años " + period.getMonths() + " meses " + period.getDays() + " días";
+
+            // Si los meses son 12 o más, los convertimos en años
+            int totalYears = period.getYears() + (period.getMonths() / 12);
+            int totalMonths = period.getMonths() % 12;
+            int totalDays = period.getDays();
+
+            return totalYears + " años " + totalMonths + " meses " + totalDays + " días";
         } else {
             return "No especificada";
         }
     }
 
-    // Método para calcular toda la experiencia del usuario
+
     public static String calculateTotalExperience(List<WorkExperience> workExperiences) {
         int totalYears = 0;
         int totalMonths = 0;
         int totalDays = 0;
 
         for (WorkExperience exp : workExperiences) {
-            if (exp.getStartDate() != null && exp.getEndDate() != null) { // Aseguramos que las fechas no sean nulas
+            if (exp.getStartDate() != null && exp.getEndDate() != null) {
                 Period period = Period.between(exp.getStartDate(), exp.getEndDate());
                 totalYears += period.getYears();
                 totalMonths += period.getMonths();
@@ -98,4 +109,5 @@ public class WorkExperience {
 
         return "Años total de experiencia: " + totalYears + " años " + totalMonths + " meses " + totalDays + " días";
     }
+
 }

@@ -1,6 +1,8 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
@@ -16,12 +18,11 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.UserSignInView.class) // Aplicar vista nueva
+    @JsonView(Views.UserSignInView.class)
     private Long id;
 
     @Basic
@@ -66,21 +67,20 @@ public class UserEntity {
     private List<UserFile> userFiles;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference("user-favorites") // Se serializan los favoritos aquí
     private List<FavoritesJobs> favoritesJobs;
-
 
     @Basic
     @Column(name = "created_at")
     @JsonView(Views.UserSignInView.class)
     private LocalDate createdAt;
 
-    // Excluir workExperiences y jobApplications de la vista UserSignInView
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonView(Views.JobOfferDetail.class) // Mantener la vista existente para otros casos
+    @JsonView(Views.JobOfferDetail.class)
     private List<WorkExperience> workExperiences;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonView(Views.JobOfferDetail.class) // Mantener la vista existente para otros casos
+    @JsonView(Views.JobOfferDetail.class)
     private List<JobApplication> jobApplications;
 
     @Transient

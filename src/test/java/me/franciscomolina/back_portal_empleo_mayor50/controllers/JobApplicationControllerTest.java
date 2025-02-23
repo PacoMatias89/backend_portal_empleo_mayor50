@@ -3,7 +3,6 @@ package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationCreateDto;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.JobApplicationUpdateStatusDto;
 import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
-import me.franciscomolina.back_portal_empleo_mayor50.security.UserEntityPrincipal;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,83 +32,68 @@ class JobApplicationControllerTest {
 
     @Test
     void createJobApplication_Success() {
-        // Mocks configurados correctamente
-        UserEntityPrincipal userEntityPrincipal = mock(UserEntityPrincipal.class);
-        JobApplicationCreateDto jobApplicationCreateDto = mock(JobApplicationCreateDto.class);
+        JobApplicationCreateDto jobApplicationCreateDto = new JobApplicationCreateDto();
+        jobApplicationCreateDto.setJobOfferId(1L);
 
-        // Configurar los mocks
-        when(jobApplicationCreateDto.getJobOfferId()).thenReturn(1L);
+        CompanyEntityPrincipal userEntityPrincipal = mock(CompanyEntityPrincipal.class);
         when(userEntityPrincipal.getId()).thenReturn(1L);
-        when(jobApplicationService.applyToJob(jobApplicationCreateDto, 1L, 1L)).thenReturn(jobApplicationCreateDto);
 
-        // Llamar al método que se está probando
+        when(jobApplicationService.applyToJob(any(JobApplicationCreateDto.class), eq(1L), eq(1L)))
+                .thenReturn(jobApplicationCreateDto);
+
         ResponseEntity<?> response = controller.createJobApplication(userEntityPrincipal, jobApplicationCreateDto);
 
-        // Verificar la respuesta
-        assertEquals(ResponseEntity.ok(jobApplicationCreateDto), response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(jobApplicationCreateDto, response.getBody());
         verify(jobApplicationService, times(1)).applyToJob(jobApplicationCreateDto, 1L, 1L);
     }
 
     @Test
     void createJobApplication_Failure() {
-        // Mocks configurados correctamente
-        UserEntityPrincipal userEntityPrincipal = mock(UserEntityPrincipal.class);
-        JobApplicationCreateDto jobApplicationCreateDto = mock(JobApplicationCreateDto.class);
+        JobApplicationCreateDto jobApplicationCreateDto = new JobApplicationCreateDto();
+        jobApplicationCreateDto.setJobOfferId(1L);
 
-        // Configurar los mocks
-        when(jobApplicationCreateDto.getJobOfferId()).thenReturn(1L);
+        CompanyEntityPrincipal userEntityPrincipal = mock(CompanyEntityPrincipal.class);
         when(userEntityPrincipal.getId()).thenReturn(1L);
-        when(jobApplicationService.applyToJob(jobApplicationCreateDto, 1L, 1L)).thenThrow(new RuntimeException("Job application creation failed"));
 
-        // Llamar al método que se está probando
+        when(jobApplicationService.applyToJob(any(JobApplicationCreateDto.class), eq(1L), eq(1L)))
+                .thenThrow(new RuntimeException("Job application creation failed"));
+
         ResponseEntity<?> response = controller.createJobApplication(userEntityPrincipal, jobApplicationCreateDto);
 
-        // Verificar la respuesta
-        assertEquals(ResponseEntity.badRequest().body("Job application creation failed"), response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Job application creation failed", response.getBody());
         verify(jobApplicationService, times(1)).applyToJob(jobApplicationCreateDto, 1L, 1L);
     }
 
-
     @Test
     void updateJobApplicationStatus_Success() {
-        // Mocks configurados correctamente
+        JobApplicationUpdateStatusDto statusDto = new JobApplicationUpdateStatusDto();
+
         CompanyEntityPrincipal companyEntityPrincipal = mock(CompanyEntityPrincipal.class);
-        JobApplicationUpdateStatusDto status = mock(JobApplicationUpdateStatusDto.class);
-
-        // Configurar los mocks
         when(companyEntityPrincipal.getId()).thenReturn(1L);
-        when(jobApplicationService.updateJobApplicationStatus(status, 1L, 1L)).thenReturn(status);
+        when(jobApplicationService.updateJobApplicationStatus(statusDto, 1L, 1L)).thenReturn(statusDto);
 
-        // Llamar al método que se está probando
-        ResponseEntity<?> response = controller.updateJobApplicationStatus(companyEntityPrincipal, status, 1L);
+        ResponseEntity<?> response = controller.updateJobApplicationStatus(companyEntityPrincipal, statusDto, 1L, 1L);
 
-        // Verificar la respuesta
-        assertEquals(ResponseEntity.ok(status), response);
-        assertEquals(status, response.getBody());
-        verify(jobApplicationService, times(1)).updateJobApplicationStatus(status, 1L, 1L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(statusDto, response.getBody());
+        verify(jobApplicationService, times(1)).updateJobApplicationStatus(statusDto, 1L, 1L);
     }
-
 
     @Test
     void updateJobApplicationStatus_Failure() {
-        // Mocks configurados correctamente
+        JobApplicationUpdateStatusDto statusDto = new JobApplicationUpdateStatusDto();
+
         CompanyEntityPrincipal companyEntityPrincipal = mock(CompanyEntityPrincipal.class);
-        JobApplicationUpdateStatusDto status = mock(JobApplicationUpdateStatusDto.class);
-
-        // Configurar los mocks
         when(companyEntityPrincipal.getId()).thenReturn(1L);
-        when(jobApplicationService.updateJobApplicationStatus(status, 1L, 1L)).thenThrow(new RuntimeException("Job application status update failed"));
+        when(jobApplicationService.updateJobApplicationStatus(statusDto, 1L, 1L))
+                .thenThrow(new RuntimeException("Job application status update failed"));
 
-        // Llamar al método que se está probando
-        ResponseEntity<?> response = controller.updateJobApplicationStatus(companyEntityPrincipal, status, 1L);
+        ResponseEntity<?> response = controller.updateJobApplicationStatus(companyEntityPrincipal, statusDto, 1L, 1L);
 
-        // Verificar la respuesta
-        assertEquals(ResponseEntity.badRequest().body("Job application status update failed"), response);
-        verify(jobApplicationService, times(1)).updateJobApplicationStatus(status, 1L, 1L);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Job application status update failed", response.getBody());
+        verify(jobApplicationService, times(1)).updateJobApplicationStatus(statusDto, 1L, 1L);
     }
-
-
-
-
 }

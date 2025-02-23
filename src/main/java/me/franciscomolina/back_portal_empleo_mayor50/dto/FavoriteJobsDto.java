@@ -1,3 +1,4 @@
+
 package me.franciscomolina.back_portal_empleo_mayor50.dto;
 
 import lombok.*;

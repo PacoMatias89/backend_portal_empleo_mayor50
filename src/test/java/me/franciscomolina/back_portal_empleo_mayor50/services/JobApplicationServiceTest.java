@@ -50,12 +50,13 @@ class JobApplicationServiceTest {
 
         // Configuración del DTO con el estado INSCRITO
         JobApplicationCreateDto dto = new JobApplicationCreateDto();
-        dto.setStatus(JobApplicationStatus.INSCRITO.name()); // Asegúrate de establecer el estado
+        dto.setStatus(JobApplicationStatus.INSCRITO.name());
 
         // Configuración de los objetos necesarios
         JobOffer jobOffer = new JobOffer();
+        jobOffer.setId(idJobOffer); // Agregar el ID de la oferta
         UserEntity user = new UserEntity();
-        user.setId(idUser); // Establece el ID del usuario
+        user.setId(idUser);
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setUser(user);
@@ -72,11 +73,9 @@ class JobApplicationServiceTest {
         // Llamada al método del servicio
         JobApplicationCreateDto response = jobApplicationService.applyToJob(dto, idJobOffer, idUser);
 
-
-
         // Validación del resultado
-        assertEquals(idUser, response.getUserId()); // Verifica que el ID del usuario es correcto
-        assertEquals(JobApplicationStatus.INSCRITO.name(), response.getStatus()); // Verifica que el estado es INSCRITO
+        assertEquals(idUser, response.getUserId());
+        assertEquals(JobApplicationStatus.INSCRITO.name(), response.getStatus());
 
         // Verifica las interacciones con los mocks
         verify(jobApplicationRepository).findByJobOfferIdAndUserId(idJobOffer, idUser);
@@ -84,6 +83,7 @@ class JobApplicationServiceTest {
         verify(userRepository).findById(idUser);
         verify(jobApplicationRepository).save(any(JobApplication.class));
     }
+
 
     @Test
     void applyJob_DefaultStatus(){
@@ -157,16 +157,14 @@ class JobApplicationServiceTest {
         Long idJobOffer = 1L;
         Long idUser = 1L;
 
-        // Configuración del DTO con el estado INSCRITO
         JobApplicationCreateDto dto = new JobApplicationCreateDto();
         dto.setStatus(JobApplicationStatus.INSCRITO.name());
 
         // Configuración de los mocks
         when(jobApplicationRepository.findByJobOfferIdAndUserId(idJobOffer, idUser)).thenReturn(Optional.empty());
-        when(jobOfferRepository.findById(idJobOffer)).thenReturn(Optional.empty());
+        when(jobOfferRepository.findById(idJobOffer)).thenReturn(Optional.empty()); // Asegurarse de que devuelve Optional.empty()
 
         // Llamada al método del servicio
-
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             jobApplicationService.applyToJob(dto, idJobOffer, idUser);
         });
@@ -178,6 +176,7 @@ class JobApplicationServiceTest {
         verify(userRepository, never()).findById(anyLong());
         verify(jobApplicationRepository, never()).save(any(JobApplication.class));
     }
+
 
     @Test
     void applyToJob_UserNotFound() {

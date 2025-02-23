@@ -98,10 +98,16 @@ public class JobOfferService implements IJobOfferService {
 
     @Override
     public JobOffer getJobOfferById(Long id) {
-
-        return jobOfferRepository.findById(id)
+        JobOffer jobOffer = jobOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No se ha encontrado la oferta de trabajo con ID: " + id));
+
+        // Incrementar el contador de vistas
+        jobOffer.setViews(jobOffer.getViews() + 1);
+        jobOfferRepository.save(jobOffer);
+
+        return jobOffer;
     }
+
 
     @Override
     public List<JobOffer> getJobOffersByCompany(Long id) {
@@ -113,4 +119,39 @@ public class JobOfferService implements IJobOfferService {
     public List<JobOffer> getJobOfferByIdCompany(Long id) {
         return jobOfferRepository.findJobOfferByCompanyId(id);
     }
+
+    @Override
+    public int getTotalViewsByCompany(Long companyId) {
+        return jobOfferRepository.getTotalViewsByCompany(companyId);
+    }
+
+    @Override
+    public void incrementViews(Long jobId) {
+        jobOfferRepository.findById(jobId).ifPresent(jobOffer -> {
+            int currentViews = jobOffer.getViews() == null ? 0 : jobOffer.getViews();
+            jobOffer.setViews(currentViews + 1);
+            jobOfferRepository.save(jobOffer);
+        });
+    }
+
+    @Override
+    public int countApplicationsByCompanyId(Long companyId) {
+        return jobApplicationRepository.countTotalApplicationsByCompanyId(companyId);
+    }
+
+    @Override
+    public int countJobOffersByCompanyId(Long companyId) {
+        return jobOfferRepository.countJobOffersByCompanyId(companyId);
+    }
+
+
+
+    @Override
+    public boolean existsById(Long jobId) {
+        return jobOfferRepository.existsById(jobId);
+    }
+
+
+
+
 }
