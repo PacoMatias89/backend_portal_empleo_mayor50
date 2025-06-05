@@ -56,12 +56,6 @@ Este proyecto es una API REST desarrollada en **Java** con **Spring Boot** y **M
 - `PUT /api/company/job-offers`: Actualizar oferta (requiere autenticación).
 - `DELETE /api/company/job-offers`: Eliminar oferta (requiere autenticación).
 
-## Contribución
-
-1. Haz un fork del repositorio.
-2. Crea una rama para tu feature o fix.
-3. Haz tus cambios y realiza un commit.
-4. Envía un pull request.
 
 ## Licencia
 
