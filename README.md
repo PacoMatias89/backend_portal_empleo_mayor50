@@ -1,67 +1,82 @@
+# 🎯 Portal de Empleo para Mayores de 50
 
+> API REST desarrollada en **Java** con **Spring Boot** para fomentar oportunidades laborales para personas mayores de 50 años.
 
-# Portal de Empleo para Mayores de 50
+---
 
-Este proyecto es una API REST desarrollada en **Java** con **Spring Boot** y **Maven** para gestionar ofertas de empleo dirigidas a personas mayores de 50 años. Permite a las empresas publicar, actualizar y eliminar ofertas, así como a los usuarios consultar y postularse a las mismas.
+## 🚀 Características
 
-## Características
+- 🧾 Gestión completa de **empresas** y **ofertas de empleo**
+- 🔄 CRUD completo para ofertas de trabajo
+- 🔐 Seguridad integrada con **Spring Security**
+- 📊 Control de **vistas** y **postulaciones** por oferta y empresa
+- ✅ Validaciones sólidas y manejo de errores
+- 🧩 Arquitectura limpia basada en **DTOs** y **servicios**
 
-- Gestión de empresas y ofertas de empleo.
-- CRUD completo de ofertas de trabajo.
-- Seguridad con Spring Security.
-- Control de vistas y aplicaciones por oferta y empresa.
-- Validaciones y manejo de errores.
-- Arquitectura basada en DTOs y servicios.
+---
 
-## Tecnologías
+## 🛠️ Tecnologías
 
-- Java 17+
-- Spring Boot
-- Spring Data JPA
-- Spring Security
-- Maven
-- Lombok
-- Base de datos relacional: MYSQL
+- ☕ Java 17+
+- 🌱 Spring Boot
+- 🗃️ Spring Data JPA
+- 🛡️ Spring Security
+- ⚙️ Maven
+- ✨ Lombok
+- 💾 MySQL (base de datos relacional)
 
-## Estructura del Proyecto
+---
 
-- `controllers/`: Controladores REST.
-- `dto/`: Objetos de transferencia de datos.
-- `entities/`: Entidades JPA.
-- `repositories/`: Repositorios de acceso a datos.
-- `services/`: Lógica de negocio y servicios.
-- `security/`: Seguridad y autenticación.
+## 🧭 Estructura del Proyecto
 
-## Instalación
+```
+📦 src/
+ ┣ 📂 controllers/      → Controladores REST
+ ┣ 📂 dto/              → Data Transfer Objects
+ ┣ 📂 entities/         → Entidades JPA
+ ┣ 📂 repositories/     → Acceso a datos
+ ┣ 📂 services/         → Lógica de negocio
+ ┗ 📂 security/         → Seguridad y autenticación
+```
 
-1. Clona el repositorio:
+---
+
+## ⚙️ Instalación
+
+1. 📥 Clona el repositorio:
    ```bash
-   https://github.com/PacoMatias89/backend_portal_empleo_mayor50.git
+   git clone https://github.com/PacoMatias89/backend_portal_empleo_mayor50.git
    ```
-2. Configura la base de datos y la configuración para el certificado SSL en `src/main/resources/application.properties`.
-3. Compila el proyecto:
+2. 🛠️ Configura la base de datos y SSL en `src/main/resources/application.properties`
+3. 🧹 Compila el proyecto:
    ```bash
    mvn clean install
    ```
-4. Ejecuta la aplicación:
+4. ▶️ Ejecuta la aplicación:
    ```bash
    mvn spring-boot:run
    ```
 
-## Endpoints principales
+---
 
-- `POST /api/company/job-offers`: Crear oferta de trabajo (requiere autenticación).
-- `GET /api/company/job-offers/getAllJobOffer`: Listar todas las ofertas.
-- `GET /api/company/job-offers/getJobOfferById/{id}`: Obtener oferta por ID.
-- `PUT /api/company/job-offers`: Actualizar oferta (requiere autenticación).
-- `DELETE /api/company/job-offers`: Eliminar oferta (requiere autenticación).
+## 📌 Endpoints principales
 
-
-## Licencia
-
-Este proyecto está bajo la licencia MIT.
+| Método | Endpoint                                                  | Descripción                            |
+|--------|-----------------------------------------------------------|----------------------------------------|
+| POST   | `/api/company/job-offers`                                 | Crear oferta (autenticación requerida) |
+| GET    | `/api/company/job-offers/getAllJobOffer`                  | Listar todas las ofertas               |
+| GET    | `/api/company/job-offers/getJobOfferById/{id}`            | Obtener oferta por ID                  |
+| PUT    | `/api/company/job-offers`                                 | Actualizar oferta (requiere auth)      |
+| DELETE | `/api/company/job-offers`                                 | Eliminar oferta (requiere auth)        |
 
 ---
 
-Desarrollado por Francisco Molina.
-```
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Autor
+
+Desarrollado por **Francisco Molina**.
