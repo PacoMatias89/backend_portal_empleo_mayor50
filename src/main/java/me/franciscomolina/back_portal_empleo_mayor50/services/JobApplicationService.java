@@ -29,7 +29,6 @@ public class JobApplicationService implements IJobApplicationService {
 
     @Override
     public JobApplicationCreateDto applyToJob(JobApplicationCreateDto jobApplicationCreateDto, Long idJobOffer, Long idUser) {
-        // Verifica si el usuario ya ha aplicado a la oferta
         if (jobApplicationRepository.findByJobOfferIdAndUserId(idJobOffer, idUser).isPresent()) {
             throw new RuntimeException("Ya has aplicado a esta oferta de trabajo");
         }
@@ -66,8 +65,9 @@ public class JobApplicationService implements IJobApplicationService {
 
     @Override
     public List<JobApplication> getJobApplicationsByCompany(Long companyId) {
-        return jobApplicationRepository.findByCompanyId(companyId);
+        return jobApplicationRepository.findByJobOfferIdWithUser(companyId);
     }
+
 
     @Override
     public JobApplicationUpdateStatusDto updateJobApplicationStatus(JobApplicationUpdateStatusDto statusDto, Long idJobOffer, Long idUser) {
@@ -83,4 +83,34 @@ public class JobApplicationService implements IJobApplicationService {
             throw new RuntimeException("Estado no válido: " + statusDto.getStatus());
         }
     }
+
+    @Override
+    public List<JobApplication> getJobApplicationsByCompanyAndDateRange(Long companyId, LocalDate startDate, LocalDate endDate) {
+        return jobApplicationRepository.findByCompanyIdAndDateRange(companyId, startDate, endDate);
+    }
+
+    @Override
+    public List<JobOffer> getJobOffersWithApplicants(Long companyId) {
+        List<JobOffer> jobOffers = jobApplicationRepository.findJobOffersWithApplicantsByCompanyId(companyId);
+        for (JobOffer jobOffer : jobOffers) {
+            jobOffer.setTotalApplicants(countApplicants(jobOffer.getId())); // Asigna el número de candidatos
+        }
+        return jobOffers;
+    }
+
+
+    @Override
+    public List<JobApplication> getApplicationsByJobOffer(Long jobOfferId) {
+        List<JobApplication> applications = jobApplicationRepository.findUserNamesByJobOfferId(jobOfferId);
+        System.out.println("🔎 Número de candidatos encontrados: " + applications.size());
+        return applications;
+    }
+
+    public long countApplicants(Long jobOfferId) {
+        return jobApplicationRepository.countApplicationsByJobOfferId(jobOfferId);
+    }
+
+
+
+
 }

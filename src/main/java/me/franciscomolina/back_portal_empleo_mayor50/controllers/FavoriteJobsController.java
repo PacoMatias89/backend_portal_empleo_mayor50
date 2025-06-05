@@ -58,13 +58,13 @@ public class FavoriteJobsController {
     @GetMapping
     public ResponseEntity<?> getAllFavoriteJobs(@AuthenticationPrincipal UserEntityPrincipal user) {
         try {
-
-            List<FavoritesJobs> favoriteJobs = favoriteJobService.getFavoriteJobs();
-            return ResponseEntity.ok(favoriteJobs);  // Devuelve las ofertas de trabajo completas
+            List<JobOffer> favoriteJobs = favoriteJobService.getFavoriteJobs(user.getId());
+            return ResponseEntity.ok(favoriteJobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener las ofertas favoritas: " + e.getMessage());
         }
     }
+
 
 
 

@@ -36,6 +36,7 @@ public class JobOfferService implements IJobOfferService {
         JobOffer jobOffer = new JobOffer();
         jobOffer.setTitle(jobOfferDto.getTitle());
         jobOffer.setDescription(jobOfferDto.getDescription());
+        jobOffer.setNameCompany(jobOfferDto.getNameCompany());
         jobOffer.setSalary(jobOfferDto.getSalary());
         jobOffer.setRequirements(jobOfferDto.getRequirements());
         jobOffer.setLocation(jobOfferDto.getLocation());

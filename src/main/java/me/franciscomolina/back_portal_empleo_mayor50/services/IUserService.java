@@ -23,4 +23,6 @@ public interface IUserService {
     UserEntity deleteClient(Long id);
 
     List<JobApplication> getJobApplications(Long id);
+
+    List<UserEntity>getAllUsers();
 }

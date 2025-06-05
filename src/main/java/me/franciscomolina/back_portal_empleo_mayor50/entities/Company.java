@@ -89,4 +89,25 @@ public class Company {
     @Transient
     @JsonView(Views.CompanyBasic.class)
     private String token;
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", confirmPasswordCompany='" + confirmPasswordCompany + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", phoneContact='" + phoneContact + '\'' +
+                ", cifCompany='" + cifCompany + '\'' +
+                ", isEtt=" + isEtt +
+                ", description='" + description + '\'' +
+                ", role=" + role +
+                ", jobOffers=" + jobOffers +
+                ", createdAt=" + createdAt +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

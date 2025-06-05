@@ -44,4 +44,6 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     int getTotalViewsByCompany(@Param("companyId") Long companyId);
 
 
+    @Query("SELECT j FROM JobOffer j WHERE j.company.id = :companyId")
+    List<JobOffer> findByCompanyId(Long companyId);
 }

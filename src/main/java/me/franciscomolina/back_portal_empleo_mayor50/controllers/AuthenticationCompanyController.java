@@ -26,7 +26,6 @@ public class AuthenticationCompanyController {
     private ICompanyService companyService;
 
     @PostMapping("/sign-up")
-
     public ResponseEntity<?> signUp(@Valid @RequestBody CompanyDto companyDto) {
         try {
             Company company = companyService.create(companyDto);
@@ -43,6 +42,7 @@ public class AuthenticationCompanyController {
     @JsonView(Views.CompanyBasic.class)
     public ResponseEntity<?> signIn(@RequestBody Company companyDto) {
         try {
+            System.out.println("company: " + companyDto);
             return new ResponseEntity<>(serviceCompany.signInAndReturnJWTCompany(companyDto), HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());

@@ -293,7 +293,8 @@ class CompanyServiceTest {
 
         // Verify that an exception is thrown when the company is not found
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> companyService.editCompany(id, companyDto));
-        assertEquals("La compañía no fue encontrado:" + id, exception.getMessage());
+        assertEquals("La compañía no fue encontrada: " + id, exception.getMessage());
+
 
         // Verify the repository save method was not called
         verify(companyRepository, never()).save(any(Company.class));

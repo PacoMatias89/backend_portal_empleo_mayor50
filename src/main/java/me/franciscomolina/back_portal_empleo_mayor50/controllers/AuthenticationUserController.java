@@ -42,6 +42,8 @@ public class AuthenticationUserController {
     @JsonView(Views.UserSignInView.class) // Aplicar la vista al endpoint
     public ResponseEntity<?> signIn(@RequestBody UserEntity client) {
         try {
+            System.out.println("client.getEmail(): " + client.getEmail());
+            System.out.println("client.getPassword(): " + client.getPassword());
             return new ResponseEntity<>(authenticationService.signInAndReturnJWT(client), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("ERROR: " + e.getMessage());

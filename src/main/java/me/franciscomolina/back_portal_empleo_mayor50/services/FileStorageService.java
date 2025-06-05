@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 @Service
 public class FileStorageService implements IFileStoraService {
 
-    @Value("${file.upload-dir}")
+    //@Value("${file.upload-dir}")
     private String uploadDir;
 
     @Override

@@ -20,7 +20,9 @@ public interface JwtProvider {
     String generateTokenToCompany(CompanyEntityPrincipal auth);
     String generateTokenCompany(Company client);
 
-    Authentication getAuthentication(HttpServletRequest request);
-    boolean isTokenValid(HttpServletRequest request);
 
+    Authentication getAuthentication(String token);
+
+
+    boolean isTokenValid(String token);
 }

@@ -17,12 +17,34 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private JwtProvider jwtProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Authentication authentication = jwtProvider.getAuthentication(request);
-        if (authentication != null && jwtProvider.isTokenValid(request)) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            System.out.println("Token recibido en filtro: " + token);
+
+            try {
+                if (jwtProvider.isTokenValid(token)) {
+                    Authentication auth = jwtProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    System.out.println("Token inválido o expirado: " + token);
+                }
+            } catch (Exception e) {
+                System.out.println("JWT inválido o malformado: " + token);
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No se recibió token en header Authorization");
         }
 
         filterChain.doFilter(request, response);
     }
+
+
 }

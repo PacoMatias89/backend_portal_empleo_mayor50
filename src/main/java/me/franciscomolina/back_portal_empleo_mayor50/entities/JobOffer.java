@@ -60,30 +60,33 @@ public class JobOffer {
     @JsonView(Views.JobOfferDetail.class)
     private LocalDate createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Cambio a EAGER
     @JoinColumn(name = "company_id")
     @JsonIgnoreProperties("jobOffers")
     private Company company;
 
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<JobApplication> applications;
 
     @OneToMany(mappedBy = "jobOffer", fetch = FetchType.LAZY)
-    @JsonBackReference("jobOffer-favorites") // Se ignora al serializar para romper el ciclo
+    @JsonBackReference("jobOffer-favorites") // Evita referencia circular
     private List<FavoritesJobs> favoriteJobs;
 
     @Transient
     @JsonView(Views.JobOfferDetail.class)
     private int numberOfApplications;
 
+    @Transient
+    private long totalApplicants;
+
     @Basic
-    @Column(name = "views", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "views", nullable = false)
     @JsonView(Views.JobOfferDetail.class)
     private Integer views = 0;
 
     @PrePersist
     public void setDefaultValues() {
-        // Garantiza que views tenga valor 0 si no se ha asignado un valor antes de persistir
         if (this.views == null) {
             this.views = 0;
         }
@@ -91,10 +94,6 @@ public class JobOffer {
 
     @PostLoad
     public void postLoad() {
-        if (applications != null) {
-            this.numberOfApplications = applications.size();
-        } else {
-            this.numberOfApplications = 0;
-        }
+        this.numberOfApplications = (applications != null) ? applications.size() : 0;
     }
 }

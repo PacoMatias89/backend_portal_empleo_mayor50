@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,19 +42,11 @@ class CompanyControllerTest {
         CompanyDto companyDto = new CompanyDto();
         when(companyEntityPrincipal.getId()).thenReturn(id);
 
-        ResponseEntity<?> response = controller.updateCompany(companyEntityPrincipal, companyDto);
+        ResponseEntity<?> response = controller.updateCompany(id, companyDto);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("La empresa ha sido actualizada correctamente", response.getBody());
         verify(companyService, times(1)).editCompany(id, companyDto);
-    }
-
-    @Test
-    void updateCompany_Unauthorized() {
-        ResponseEntity<?> response = controller.updateCompany(null, new CompanyDto());
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Principal is null", response.getBody());
-        verify(companyService, times(0)).editCompany(anyLong(), any());
     }
 
     @Test
@@ -64,15 +55,13 @@ class CompanyControllerTest {
         CompanyDto companyDto = new CompanyDto();
         when(companyEntityPrincipal.getId()).thenReturn(id);
 
-        //lanzamos la excepción
         doThrow(new UsernameNotFoundException("Company not found")).when(companyService).editCompany(id, companyDto);
 
-        ResponseEntity<?> response = controller.updateCompany(companyEntityPrincipal, companyDto);
+        ResponseEntity<?> response = controller.updateCompany(id, companyDto);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Company not found", response.getBody());
         verify(companyService, times(1)).editCompany(id, companyDto);
     }
-
 
     @Test
     void getJobApplications_Success() {

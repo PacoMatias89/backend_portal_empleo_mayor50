@@ -3,6 +3,7 @@ package me.franciscomolina.back_portal_empleo_mayor50.controllers;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.Valid;
 import me.franciscomolina.back_portal_empleo_mayor50.dto.CompanyDto;
+import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.security.CompanyEntityPrincipal;
@@ -11,6 +12,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.services.ICompanyService;
 import me.franciscomolina.back_portal_empleo_mayor50.services.IJobOfferService;
 import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +31,21 @@ public class CompanyController {
     @Autowired
     private IJobOfferService jobOfferService;
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateCompany(@AuthenticationPrincipal CompanyEntityPrincipal principal, @RequestBody CompanyDto companyDto) {
-        if (principal == null) {
-            return new ResponseEntity<>("Principal is null", HttpStatus.UNAUTHORIZED);
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")  // Solo admins pueden obtener todas las empresas
+    public ResponseEntity<List<Company>> getAllCompanies() {
+        List<Company> companies = companyService.getAllCompanies();
+        if (companies.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(companies);
+    }
 
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto) {
         try {
-            Long id = principal.getId();
             companyService.editCompany(id, companyDto);
             return new ResponseEntity<>("La empresa ha sido actualizada correctamente", HttpStatus.OK);
         } catch (UsernameNotFoundException e) {
@@ -79,6 +88,8 @@ public class CompanyController {
 
 
 
+
+
     @GetMapping("/applications")
     public ResponseEntity<?> getTotalApplications(@AuthenticationPrincipal CompanyEntityPrincipal principal) {
         if (principal == null) {
@@ -109,6 +120,7 @@ public class CompanyController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
     @PutMapping("/jobOffers/{jobId}/incrementViews")
     public ResponseEntity<?> incrementJobOfferViews(@AuthenticationPrincipal UserEntityPrincipal principal, @PathVariable Long jobId) {
         if (principal == null) {
@@ -132,6 +144,16 @@ public class CompanyController {
     }
 
 
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteCompany(@RequestParam Long id) {
+        try {
+            Company deletedCompany = companyService.deleteCompany(id);
+            return new ResponseEntity<>("La compañía ha sido eliminada correctamente: " + deletedCompany.getCompanyName(), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
 
 }

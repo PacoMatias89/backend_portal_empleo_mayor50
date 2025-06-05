@@ -23,11 +23,11 @@ public class JobApplication {
     @JsonView(Views.JobOfferDetail.class)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Cambio a EAGER
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Cambio a EAGER
     @JoinColumn(name = "job_offer_id")
     @JsonView(Views.JobOfferDetail.class)
     private JobOffer jobOffer;

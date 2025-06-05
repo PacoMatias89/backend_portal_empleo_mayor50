@@ -2,14 +2,16 @@ package me.franciscomolina.back_portal_empleo_mayor50.services;
 
 import me.franciscomolina.back_portal_empleo_mayor50.dto.CompanyDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
-import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
-import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ICompanyService {
+
+
+    Company deleteCompanyById(Long id);
+
     Company create(CompanyDto company);
 
     Optional<Company> findByUsername(String name);
@@ -21,6 +23,8 @@ public interface ICompanyService {
     Company editCompany(Long id, CompanyDto companyEntity);
 
     Company deleteCompany(Long id);
+
+    List<Company> getAllCompanies();
 
     List<JobOffer> getJobOffers(Long id);
 }

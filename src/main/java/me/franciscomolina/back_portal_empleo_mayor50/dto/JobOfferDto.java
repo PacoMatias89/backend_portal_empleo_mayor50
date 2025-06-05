@@ -13,6 +13,7 @@ public class JobOfferDto {
     private Long id; // Agrega este campo para mantener el ID de la oferta
     private String title;
     private String description;
+    private String nameCompany;
     private Double salary;
     private String requirements;
     private String location;

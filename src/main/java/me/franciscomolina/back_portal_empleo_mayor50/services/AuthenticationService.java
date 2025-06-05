@@ -49,21 +49,6 @@ public class AuthenticationService implements IAuthenticationService {
         UserEntity sigInUser = clientPrincipal.getUser();
         sigInUser.setToken(jwt);
 
-        //obtenemos la expriencia laboral
-        // Obtener y calcular la experiencia laboral
-       /* List<WorkExperience> workExperiences = workExperienceService.getuserWorkExperience(sigInUser.getId());
-        if (workExperiences != null) {
-            sigInUser.setWorkExperiences(workExperiences);
-            String totalExperience = workExperienceService.calculateTotalExperience(workExperiences);
-            sigInUser.setTotalExperience(totalExperience);
-            System.out.println("Experiencia laboral recuperada: " + workExperiences);
-        } else {
-            System.out.println("No se encontró experiencia laboral para el usuario.");
-        }*/
-
-
-
-        //workExperienceService.calculateTotalExperience(workExperiences);
         return sigInUser;
     }
 }

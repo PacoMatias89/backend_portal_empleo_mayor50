@@ -23,7 +23,7 @@ public class FileController {
     @Autowired
     private JwtProvider jwtProvider;  // Asegúrate de tener esta referencia
 
-    @PostMapping("/upload")
+    /*@PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         // Extraer el token del encabezado
         String token = SecurityUtils.extractAuthTokenFromRequest(request);
@@ -43,5 +43,5 @@ public class FileController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al subir el archivo: " + e.getMessage());
         }
-    }
+    }*/
 }

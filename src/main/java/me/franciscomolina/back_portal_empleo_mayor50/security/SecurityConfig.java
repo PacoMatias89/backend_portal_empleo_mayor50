@@ -31,6 +31,9 @@ public class SecurityConfig {
     @Autowired
     private CustomCompanyDetailsService customCompanyDetailsService;
 
+    @Autowired
+    private CustomAdminDetailService customAdminDetailsService;  // Servicio para Admin
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -46,6 +49,7 @@ public class SecurityConfig {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         auth.userDetailsService(customCompanyDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(customAdminDetailsService).passwordEncoder(passwordEncoder);
 
         return http
                 .cors(Customizer.withDefaults())
@@ -56,35 +60,52 @@ public class SecurityConfig {
                         .requestMatchers("/api/authentication-company/sign-up").permitAll()
                         .requestMatchers("/api/authentication-company/sign-in").permitAll()
                         .requestMatchers("/api/company/job-offers/getAllJobOffer").permitAll()
-                        .requestMatchers("/api/company/job-offers").hasRole("COMPANY")
-                        .requestMatchers("/api/company/job-application/updateJobApplicationStatus").hasRole("COMPANY")
-                        .requestMatchers("/api/work-experience/get_work-experiences").hasAnyRole("USER", "COMPANY")
-                        .requestMatchers("/api/company/job-offers/getJobOfferById/**").hasRole("COMPANY")
-                        .requestMatchers("/api/company/job-application/getJobApplicationsCompany").hasRole("COMPANY")
+                        .requestMatchers("/api/user/update/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/delete").hasRole("ADMIN")
+                        .requestMatchers("/api/company/update/**").hasRole("ADMIN")
+                        .requestMatchers("/api/company/delete").hasRole("ADMIN")
+                        .requestMatchers("/api/user/job-applications").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/company/job-application/user/**").hasRole("ADMIN")
+                        .requestMatchers("/api/company/job-offers").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-application/updateJobApplicationStatus/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/work-experience/get_work-experiences").hasAnyRole("USER", "COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-offers/getJobOfferById/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-application/getJobApplicationsCompany").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-application/job-offer/{jobOfferId}/applications").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-application/job-offers-with-applicants").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/job-offer/createJobOffer").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/jobOffers").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/jobOffersCount").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/totalViews").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers("/api/company/applications").hasAnyRole("COMPANY", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 
-    // Configuración del AuthenticationManagerBuilder separadamente
+    // Configuración de los UserDetailsService y passwordEncoder para todos los tipos
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         auth.userDetailsService(customCompanyDetailsService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(customAdminDetailsService).passwordEncoder(passwordEncoder);
     }
 
-    // Configurar CORS para el frontend
+    // Configuración CORS para el frontend
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("https://portal-empleo.netlify.app") // Dirección del frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
-                        .allowedHeaders("*"); // Permitir todos los encabezados
+                        .allowedOrigins("https://portal-empleo.netlify.app")
+                        //.allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders("*");
             }
         };
     }

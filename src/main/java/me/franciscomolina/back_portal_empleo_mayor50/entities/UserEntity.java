@@ -1,8 +1,6 @@
 package me.franciscomolina.back_portal_empleo_mayor50.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
@@ -17,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "jobApplications"})
 public class UserEntity {
 
     @Id
@@ -50,6 +48,7 @@ public class UserEntity {
     @JsonView(Views.UserSignInView.class)
     private String password;
 
+
     @Transient
     @JsonView(Views.UserSignInView.class)
     private String confirmPassword;
@@ -64,10 +63,11 @@ public class UserEntity {
     private String token;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<UserFile> userFiles;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference("user-favorites") // Se serializan los favoritos aquí
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonManagedReference("user-favorites")
     private List<FavoritesJobs> favoritesJobs;
 
     @Basic
@@ -76,14 +76,36 @@ public class UserEntity {
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonView(Views.JobOfferDetail.class)
+    @JsonIgnore
     private List<WorkExperience> workExperiences;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonView(Views.JobOfferDetail.class)
+    @JsonIgnore
     private List<JobApplication> jobApplications;
 
     @Transient
     @JsonView(Views.UserSignInView.class)
     private String totalExperience;
+
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastnames='" + lastnames + '\'' +
+                ", email='" + email + '\'' +
+                ", birthdate=" + birthdate +
+                ", password='" + password + '\'' +
+                ", confirmPassword='" + confirmPassword + '\'' +
+                ", role=" + role +
+                ", token='" + token + '\'' +
+                ", userFiles=" + userFiles +
+                ", favoritesJobs=" + favoritesJobs +
+                ", createdAt=" + createdAt +
+                ", workExperiences=" + workExperiences +
+                ", jobApplications=" + jobApplications +
+                ", totalExperience='" + totalExperience + '\'' +
+                '}';
+    }
 }

@@ -36,7 +36,7 @@ public class UserService implements IUserService {
     @Override
     public UserEntity create(UserDto client) {
 
-       if (!client.getPassword().equals(client.getConfirmPassword())) {
+        if (!client.getPassword().equals(client.getConfirmPassword())) {
             throw new IllegalArgumentException("Las contraseñas no coinciden");
         }
 
@@ -85,25 +85,49 @@ public class UserService implements IUserService {
         return user;
     }
 
+
     @Override
-    public UserEntity editClient(Long id, UserDto clientEntity) {
+    public UserEntity editClient(Long id, UserDto clientDto) {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario no fue encontrado: " + id));
 
-        user.setName(clientEntity.getName());
-        user.setLastnames(clientEntity.getLastnames());
-        user.setEmail(clientEntity.getEmail());
-        user.setBirthdate(clientEntity.getBirthdate());
+        // Actualizar solo si no es null
+        if (clientDto.getName() != null) {
+            user.setName(clientDto.getName());
+        }
 
-        //Si la contraseña se cambia se encripta
+        if (clientDto.getLastnames() != null) {
+            user.setLastnames(clientDto.getLastnames());
+        }
 
-        user.setPassword(passwordEncoder.encode(clientEntity.getPassword()));
-        user.setConfirmPassword(passwordEncoder.encode(clientEntity.getConfirmPassword()));
+        if (clientDto.getEmail() != null) {
+            user.setEmail(clientDto.getEmail());
+        }
 
+        if (clientDto.getBirthdate() != null) {
+            user.setBirthdate(clientDto.getBirthdate());
+        }
+
+        // Para password solo actualizar si ambos vienen y coinciden
+        String password = clientDto.getPassword();
+        String confirmPassword = clientDto.getConfirmPassword();
+
+        if (password != null || confirmPassword != null) {
+            if (password == null || confirmPassword == null) {
+                throw new IllegalArgumentException("Ambos campos de contraseña deben estar presentes para cambiar la contraseña");
+            }
+            if (!password.equals(confirmPassword)) {
+                throw new IllegalArgumentException("Las contraseñas no coinciden");
+            }
+
+            user.setPassword(passwordEncoder.encode(password));
+            user.setConfirmPassword(passwordEncoder.encode(confirmPassword));
+        }
 
         return userRepository.save(user);
     }
+
 
     @Override
     public UserEntity deleteClient(Long id) {
@@ -126,5 +150,10 @@ public class UserService implements IUserService {
 
 
 
+    }
+
+    @Override
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
     }
 }

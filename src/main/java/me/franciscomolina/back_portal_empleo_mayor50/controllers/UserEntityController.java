@@ -12,6 +12,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.view.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +29,41 @@ public class UserEntityController {
     @Autowired
     private JobApplicationService jobApplicationService;
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updataUser(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntity, @RequestBody UserDto user){
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")  // Solo admins pueden obtener todos los usuarios
+    public ResponseEntity<List<UserEntity>> getAllUsers() {
+        List<UserEntity> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(users);
+    }
 
-        try{
-            Long id = userEntity.getId();
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto user) {
+        try {
             userService.editClient(id, user);
-            return new ResponseEntity<>( "El perfil ha sido actualizado correctamente", HttpStatus.OK);
-        }catch(UsernameNotFoundException e){
+            return new ResponseEntity<>("El perfil ha sido actualizado correctamente", HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+
+    // Get all job applications for the authenticated ADMIN by their ID
+    @GetMapping("/job-applications/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getJobApplicationsById(@PathVariable Long id) {
+        try {
+            List<JobApplication> jobApplications = jobApplicationService.getJobApplication(id);
+            return new ResponseEntity<>(jobApplications, HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @GetMapping("/job-applications")
     @JsonView(Views.JobOfferDetail.class)
@@ -54,9 +79,9 @@ public class UserEntityController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser(@Valid @AuthenticationPrincipal UserEntityPrincipal userEntity){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@RequestParam Long id) {
         try {
-            Long id = userEntity.getId();
             UserEntity userDelete = userService.deleteClient(id);
             return new ResponseEntity<>("Usuario " + userDelete.getName() + " ha sido eliminado", HttpStatus.OK);
         } catch (UsernameNotFoundException e) {

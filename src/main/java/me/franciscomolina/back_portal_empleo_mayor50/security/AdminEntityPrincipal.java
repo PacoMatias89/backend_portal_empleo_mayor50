@@ -2,22 +2,17 @@ package me.franciscomolina.back_portal_empleo_mayor50.security;
 
 import lombok.*;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
-import me.franciscomolina.back_portal_empleo_mayor50.entities.WorkExperience;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.time.Period;
+;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntityPrincipal implements UserDetails {
+public class AdminEntityPrincipal implements UserDetails {
 
     private Long id;
     private String username;
@@ -61,16 +56,6 @@ public class UserEntityPrincipal implements UserDetails {
         return true;
     }
 
-    public String calculateTotalExperience(List<WorkExperience> workExperiences) {
-        Period totalPeriod = Period.of(0, 0, 0);
 
-        for (WorkExperience exp : workExperiences) {
-            if (exp.getStartDate() != null && exp.getEndDate() != null) {
-                Period period = Period.between(exp.getStartDate(), exp.getEndDate());
-                totalPeriod = totalPeriod.plus(period);
-            }
-        }
 
-        return totalPeriod.getYears() + " años " + totalPeriod.getMonths() + " meses " + totalPeriod.getDays() + " días";
-    }
 }
