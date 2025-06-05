@@ -38,7 +38,7 @@ Este proyecto es una API REST desarrollada en **Java** con **Spring Boot** y **M
    ```bash
    https://github.com/PacoMatias89/backend_portal_empleo_mayor50.git
    ```
-2. Configura la base de datos en `src/main/resources/application.properties`.
+2. Configura la base de datos y la configuración para el certificado SSL en `src/main/resources/application.properties`.
 3. Compila el proyecto:
    ```bash
    mvn clean install
