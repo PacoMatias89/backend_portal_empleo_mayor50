@@ -40,16 +40,18 @@ public class UserEntityController {
     }
 
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto user) {
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDto user) {
         try {
             userService.editClient(id, user);
-            return new ResponseEntity<>("El perfil ha sido actualizado correctamente", HttpStatus.OK);
+            return ResponseEntity.ok("El perfil ha sido actualizado correctamente");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (UsernameNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
 
     // Get all job applications for the authenticated ADMIN by their ID

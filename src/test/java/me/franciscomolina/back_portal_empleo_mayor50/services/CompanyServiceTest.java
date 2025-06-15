@@ -13,9 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -227,76 +230,45 @@ class CompanyServiceTest {
     }
 
     @Test
-    void editCompany_Success(){
+    void updateCompanyPartial_Success() {
         Long id = 1L;
-        CompanyDto companyDto = new CompanyDto();
-        companyDto.setName("newName");
-        companyDto.setLastname("newLastname");
-        companyDto.setEmail("newEmail");
-        companyDto.setPassword("newPassword");
-        companyDto.setConfirmPasswordCompany("newPassword");
-        companyDto.setCompanyName("newCompanyName");
-        companyDto.setPhoneContact("newPhoneContact");
-        companyDto.setCifCompany("newCifCompany");
-        companyDto.setIsEtt(true);
-        companyDto.setDescription("newDescription");
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("companyname", "Updated Company Name"); // fíjate que en tu switch es "companyname" (todo en minúscula)
+        updates.put("phoneContact", "123456789");
 
         Company existingCompany = new Company();
         existingCompany.setId(id);
-        existingCompany.setName("oldName");
-        existingCompany.setLastname("oldLastname");
-        existingCompany.setEmail("oldEmail");
-        existingCompany.setPassword("oldPassword");
-        existingCompany.setConfirmPasswordCompany("oldPassword");
-        existingCompany.setCompanyName("oldCompanyName");
-        existingCompany.setPhoneContact("oldPhoneContact");
-        existingCompany.setCifCompany("oldCifCompany");
-        existingCompany.setIsEtt(false);
-        existingCompany.setDescription("oldDescription");
+        existingCompany.setCompanyName("Old Company Name");
+        existingCompany.setPhoneContact("987654321");
 
-        // Mock the companyRepository to return the existing company when findById is called
         when(companyRepository.findById(id)).thenReturn(Optional.of(existingCompany));
+        when(companyRepository.save(any(Company.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Mock the passwordEncoder to return the encoded password
-        when(passwordEncoder.encode(companyDto.getPassword())).thenReturn("encodedPassword");
-        when(passwordEncoder.encode(companyDto.getConfirmPasswordCompany())).thenReturn("encodedPassword");
+        // Llamas el método sin capturar retorno
+        companyService.updateCompanyPartial(id, updates);
 
-        // Mock the companyRepository to return the updated company when save is called
-        when(companyRepository.save(any(Company.class))).thenReturn(existingCompany);
+        // Verifica que el objeto fue modificado correctamente
+        assertEquals("Updated Company Name", existingCompany.getCompanyName());
+        assertEquals("123456789", existingCompany.getPhoneContact());
 
-        Company result = companyService.editCompany(id, companyDto);
-
-        // Verify the updated fields
-        assertEquals("newName", result.getName());
-        assertEquals("newLastname", result.getLastname());
-        assertEquals("newEmail", result.getEmail());
-        assertEquals("encodedPassword", result.getPassword());
-        assertEquals("encodedPassword", result.getConfirmPasswordCompany());
-        assertEquals("newCompanyName", result.getCompanyName());
-        assertEquals("newPhoneContact", result.getPhoneContact());
-        assertEquals("newCifCompany", result.getCifCompany());
-        assertTrue(result.getIsEtt());
-        assertEquals("newDescription", result.getDescription());
-
-        // Verify the repository interactions
         verify(companyRepository).findById(id);
         verify(companyRepository).save(existingCompany);
     }
 
     @Test
-    void editCompany_CompanyNotFound(){
+    void updateCompanyPartial_CompanyNotFound() {
         Long id = 1L;
-        CompanyDto companyDto = new CompanyDto();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("description", "New description");
 
-        // Mock the companyRepository to return an empty Optional when findById is called
         when(companyRepository.findById(id)).thenReturn(Optional.empty());
 
-        // Verify that an exception is thrown when the company is not found
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> companyService.editCompany(id, companyDto));
-        assertEquals("La compañía no fue encontrada: " + id, exception.getMessage());
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class,
+                () -> companyService.updateCompanyPartial(id, updates));
 
+        assertEquals("Empresa no encontrada con id: " + id, exception.getMessage());
 
-        // Verify the repository save method was not called
+        verify(companyRepository).findById(id);
         verify(companyRepository, never()).save(any(Company.class));
     }
 

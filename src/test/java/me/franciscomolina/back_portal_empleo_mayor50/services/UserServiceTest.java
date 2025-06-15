@@ -4,6 +4,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.dto.UserDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.FavoriteJobsRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.UserRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
@@ -37,6 +38,9 @@ class UserServiceTest {
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
+
+    @Mock
+    private FavoriteJobsRepository favoriteJobsRepository;
 
     @InjectMocks
     private UserService userService;
@@ -232,12 +236,11 @@ class UserServiceTest {
 
 
     @Test
-    void deleteClient_Success(){
+    void deleteClient_Success() {
         UserEntity user = new UserEntity();
         user.setId(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
 
         UserEntity deletedUser = userService.deleteClient(1L);
 
@@ -245,9 +248,12 @@ class UserServiceTest {
         assertEquals(user.getId(), deletedUser.getId());
 
         verify(userRepository).findById(1L);
-        verify(userRepository).deleteById(1L);
-
+        verify(favoriteJobsRepository).deleteAllByUserId(1L);
+        verify(jobApplicationRepository).deleteByUser(user); // ✅ asegúrate de tener este método
+        verify(userRepository).delete(user); // ✅ así se usa en tu servicio
     }
+
+
 
     @Test
     void deleteClient_UserNotFound(){

@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/company")
@@ -42,16 +43,18 @@ public class CompanyController {
     }
 
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto) {
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> patchCompany(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
-            companyService.editCompany(id, companyDto);
-            return new ResponseEntity<>("La empresa ha sido actualizada correctamente", HttpStatus.OK);
+            companyService.updateCompanyPartial(id, updates);
+            return ResponseEntity.ok("Empresa actualizada parcialmente");
         } catch (UsernameNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 
 
 

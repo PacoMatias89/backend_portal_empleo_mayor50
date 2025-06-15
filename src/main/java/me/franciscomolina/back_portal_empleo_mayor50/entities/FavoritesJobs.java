@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -19,7 +21,8 @@ public class FavoritesJobs {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference("user-favorites") // No se serializa el usuario aquí
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference("user-favorites")
     private UserEntity user;
 
     @ManyToOne

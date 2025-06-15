@@ -1,38 +1,48 @@
 package me.franciscomolina.back_portal_empleo_mayor50.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import java.nio.file.*;
 
 @Service
 public class FileStorageService implements IFileStoraService {
 
-    //@Value("${file.upload-dir}")
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     @Override
     public String saveFile(MultipartFile file, Long userId) throws IOException {
-        if (file.isEmpty()){
+        if (file.isEmpty()) {
             throw new IllegalArgumentException("El archivo está vacío");
         }
-        Path uploadPath = Paths.get(uploadDir, String.valueOf(userId));
-        if(!Files.exists(uploadPath)){
-            try {
-                Files.createDirectories(uploadPath);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("No se pudo crear el directorio para subir el archivo");
-            }
+
+        Path userDir = Paths.get(uploadDir, String.valueOf(userId));
+        if (!Files.exists(userDir)) {
+            Files.createDirectories(userDir);
         }
-        //guardamos el fichero
+
         String fileName = file.getOriginalFilename();
-        Path filePath = uploadPath.resolve(fileName);
+        Path filePath = userDir.resolve(fileName);
         file.transferTo(filePath.toFile());
 
-        return filePath.toString();
+        return fileName;
+    }
+
+    @Override
+    public Resource loadFileAsResource(Long userId, String filename) throws MalformedURLException {
+        Path filePath = Paths.get(uploadDir, String.valueOf(userId)).resolve(filename).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (resource.exists() && resource.isReadable()) {
+            return resource;
+        } else {
+            throw new RuntimeException("Archivo no encontrado: " + filename);
+        }
     }
 }

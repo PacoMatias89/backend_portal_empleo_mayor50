@@ -5,6 +5,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.dto.UserDto;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import me.franciscomolina.back_portal_empleo_mayor50.model.Role;
+import me.franciscomolina.back_portal_empleo_mayor50.repositories.FavoriteJobsRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplicationRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.UserRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +30,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FavoriteJobsRepository favoriteJobsRepository;
 
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
@@ -129,16 +134,25 @@ public class UserService implements IUserService {
     }
 
 
+    @Transactional
     @Override
     public UserEntity deleteClient(Long id) {
-
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("El usuario no fue encontrado: " + id));
 
-        userRepository.deleteById(id);
+        // ✅ Eliminar favoritos por ID
+        favoriteJobsRepository.deleteAllByUserId(id);
+
+        // Eliminar aplicaciones a empleos (si aplica)
+        jobApplicationRepository.deleteByUser(user); // Si tienes esa relación
+
+        // Ahora sí, eliminar usuario
+        userRepository.delete(user);
 
         return user;
     }
+
+
 
     @Override
     public List<JobApplication> getJobApplications(Long id) {

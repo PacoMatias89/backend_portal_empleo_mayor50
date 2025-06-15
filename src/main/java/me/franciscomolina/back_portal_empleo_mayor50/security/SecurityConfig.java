@@ -60,9 +60,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/authentication-company/sign-up").permitAll()
                         .requestMatchers("/api/authentication-company/sign-in").permitAll()
                         .requestMatchers("/api/company/job-offers/getAllJobOffer").permitAll()
-                        .requestMatchers("/api/user/update/**").hasRole("ADMIN")
+
+                        // Endpoints protegidos para subir y descargar archivos
+                        .requestMatchers("/api/files/upload").hasAnyRole("USER", "COMPANY", "ADMIN")
+                        .requestMatchers("/api/files/download/**").hasAnyRole("USER", "COMPANY", "ADMIN")
+                        .requestMatchers("/api/files/exists/**").hasAnyRole("COMPANY", "ADMIN")
+
+                        .requestMatchers("/api/user/update/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/user/delete").hasRole("ADMIN")
-                        .requestMatchers("/api/company/update/**").hasRole("ADMIN")
+                        .requestMatchers("/api/company/update/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers("/api/company/delete").hasRole("ADMIN")
                         .requestMatchers("/api/user/job-applications").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/company/job-application/user/**").hasRole("ADMIN")
@@ -84,7 +90,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 
     // Configuración de los UserDetailsService y passwordEncoder para todos los tipos
@@ -104,7 +109,7 @@ public class SecurityConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins("https://portal-empleo.netlify.app")
                         //.allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                         .allowedHeaders("*");
             }
         };

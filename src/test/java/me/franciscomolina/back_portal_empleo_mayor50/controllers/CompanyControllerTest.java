@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -36,32 +38,39 @@ class CompanyControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void updateCompany_Success() {
-        Long id = 1L;
-        CompanyDto companyDto = new CompanyDto();
-        when(companyEntityPrincipal.getId()).thenReturn(id);
 
-        ResponseEntity<?> response = controller.updateCompany(id, companyDto);
+
+    @Test
+    void patchCompany_Success() {
+        Long id = 1L;
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("companyName", "Nueva Empresa");
+
+        // No lanzamos excepción, método exitoso
+        doNothing().when(companyService).updateCompanyPartial(id, updates);
+
+        ResponseEntity<?> response = controller.patchCompany(id, updates);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("La empresa ha sido actualizada correctamente", response.getBody());
-        verify(companyService, times(1)).editCompany(id, companyDto);
+        assertEquals("Empresa actualizada parcialmente", response.getBody());
+        verify(companyService, times(1)).updateCompanyPartial(id, updates);
     }
 
     @Test
-    void updateCompany_CompanyNotFound() {
+    void patchCompany_CompanyNotFound() {
         Long id = 1L;
-        CompanyDto companyDto = new CompanyDto();
-        when(companyEntityPrincipal.getId()).thenReturn(id);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("email", "email@nuevo.com");
 
-        doThrow(new UsernameNotFoundException("Company not found")).when(companyService).editCompany(id, companyDto);
+        doThrow(new UsernameNotFoundException("Company not found")).when(companyService).updateCompanyPartial(id, updates);
 
-        ResponseEntity<?> response = controller.updateCompany(id, companyDto);
+        ResponseEntity<?> response = controller.patchCompany(id, updates);
+
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Company not found", response.getBody());
-        verify(companyService, times(1)).editCompany(id, companyDto);
+        verify(companyService, times(1)).updateCompanyPartial(id, updates);
     }
+
 
     @Test
     void getJobApplications_Success() {

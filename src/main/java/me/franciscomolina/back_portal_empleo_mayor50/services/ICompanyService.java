@@ -5,6 +5,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.entities.Company;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ICompanyService {
@@ -20,7 +21,10 @@ public interface ICompanyService {
 
     Company findByNameReturnToken(String name);
 
-    Company editCompany(Long id, CompanyDto companyEntity);
+   // void editCompany(Long id, CompanyDto companyEntity);
+
+
+    void updateCompanyPartial(Long id, Map<String, Object> updates);
 
     Company deleteCompany(Long id);
 

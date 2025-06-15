@@ -5,6 +5,7 @@ import me.franciscomolina.back_portal_empleo_mayor50.entities.JobApplication;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.JobOffer;
 import me.franciscomolina.back_portal_empleo_mayor50.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -41,7 +42,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     @Query("SELECT ja FROM JobApplication ja JOIN ja.user u WHERE ja.jobOffer.id = :jobOfferId")
     List<JobApplication> findUserNamesByJobOfferId(@Param("jobOfferId") Long jobOfferId);
-    ;
+
 
 
     @Query("SELECT jo FROM JobOffer jo WHERE jo.company.id = :companyId AND EXISTS (" +
@@ -54,8 +55,13 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
             "WHERE ja.jobOffer.id = :jobOfferId")
     List<JobApplication> findByJobOfferIdWithUser(@Param("jobOfferId") Long jobOfferId);
 
+    @Modifying
+    @Query("DELETE FROM JobApplication ja WHERE ja.user.id = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 
-
+    @Modifying
+    @Query("DELETE FROM JobApplication ja WHERE ja.user = :user")
+    void deleteByUser(UserEntity user);
 
 
 

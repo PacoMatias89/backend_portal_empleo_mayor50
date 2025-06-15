@@ -11,11 +11,13 @@ import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobApplication
 import me.franciscomolina.back_portal_empleo_mayor50.repositories.JobOfferRepository;
 import me.franciscomolina.back_portal_empleo_mayor50.security.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -100,57 +102,38 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public Company editCompany(Long id, CompanyDto companyDto) {
+    public void updateCompanyPartial(Long id, Map<String, Object> updates) {
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("La compañía no fue encontrada: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("Empresa no encontrada con id: " + id));
 
-        // Actualización condicional solo si no es null ni vacío
-        if (companyDto.getName() != null && !companyDto.getName().isBlank()) {
-            company.setName(companyDto.getName());
-        }
-
-        if (companyDto.getLastname() != null && !companyDto.getLastname().isBlank()) {
-            company.setLastname(companyDto.getLastname());
-        }
-
-        if (companyDto.getEmail() != null && !companyDto.getEmail().isBlank()) {
-            company.setEmail(companyDto.getEmail());
-        }
-
-        // Solo actualizamos password si password y confirmPassword coinciden y no están vacíos
-        if (companyDto.getPassword() != null && !companyDto.getPassword().isBlank()
-                && companyDto.getConfirmPasswordCompany() != null && !companyDto.getConfirmPasswordCompany().isBlank()) {
-            if (!companyDto.getPassword().equals(companyDto.getConfirmPasswordCompany())) {
-                throw new IllegalArgumentException("Las contraseñas no coinciden");
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "companyname":
+                    company.setCompanyName((String) value);
+                    break;
+                case "email":
+                    company.setEmail((String) value);
+                    break;
+                case "phoneContact":
+                    company.setPhoneContact((String) value);
+                    break;
+                case "cifCompany":
+                    company.setCifCompany((String) value);
+                    break;
+                case "password":
+                    // Solo cambiar si viene password y confirmación (valida si quieres)
+                    String newPass = (String) value;
+                    // Aquí agrega lógica para confirmar password si quieres
+                    company.setPassword(passwordEncoder.encode(newPass));
+                    break;
+                // agrega más campos si los tienes
             }
-            company.setPassword(passwordEncoder.encode(companyDto.getPassword()));
-            company.setConfirmPasswordCompany(passwordEncoder.encode(companyDto.getConfirmPasswordCompany()));
-        }
+        });
 
-        if (companyDto.getCompanyName() != null && !companyDto.getCompanyName().isBlank()) {
-            company.setCompanyName(companyDto.getCompanyName());
-        }
-
-        if (companyDto.getPhoneContact() != null && !companyDto.getPhoneContact().isBlank()) {
-            company.setPhoneContact(companyDto.getPhoneContact());
-        }
-
-        if (companyDto.getCifCompany() != null && !companyDto.getCifCompany().isBlank()) {
-            company.setCifCompany(companyDto.getCifCompany());
-        }
-
-        // Para Boolean no tiene sentido chequear isBlank, solo null
-        if (companyDto.getIsEtt() != null) {
-            company.setIsEtt(companyDto.getIsEtt());
-        }
-
-        // Description puede ser null o vacía (no validada en tu DTO)
-        if (companyDto.getDescription() != null) {
-            company.setDescription(companyDto.getDescription());
-        }
-
-        return companyRepository.save(company);
+        companyRepository.save(company);
     }
+
+
 
 
     @Override
